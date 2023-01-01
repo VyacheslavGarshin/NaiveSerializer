@@ -18,16 +18,16 @@ namespace Naive.Serializer.Handlers
             writer.Write((int)obj);
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
             var value = reader.ReadInt32();
 
-            if (type == null)
+            if (Type == null)
             {
                 return value;
             }
 
-            var enumType = Nullable.GetUnderlyingType(type) ?? type;
+            var enumType = Nullable.GetUnderlyingType(Type) ?? Type;
 
             if (enumType == null || !enumType.IsEnum)
             {

@@ -10,56 +10,57 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.IList;
 
+        private Type _itemType;
+        
+        private IHandler _itemHandler;
+
         public override bool Match(Type type)
         {
             return type.GetInterfaces().Any(x => x == typeof(IList));
+        }
+
+        public override void SetType(Type type)
+        {
+            base.SetType(type);
+
+            if (Type == null)
+            {
+                Type = typeof(object[]);
+                _itemType = typeof(object);
+            }
+            else
+            {
+                _itemType = Type.IsArray ? Type.GetElementType() : Type.GetGenericArguments()[0];
+
+                if (_itemType != typeof(object))
+                {
+                    _itemHandler = NaiveSerializer.GetTypeHandler(_itemType);             
+                }
+            }
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             var list = (IList)obj;
 
-            var itemType = WriteType.IsArray ? WriteType.GetElementType() : WriteType.GetGenericArguments()[0];
-
-            IHandler itemHandler = null;
-
-            if (itemType != typeof(object))
-            {
-                itemHandler = NaiveSerializer.GetTypeHandler(itemType);
-            }
-
             writer.Write(list.Count);
 
             foreach (var item in list)
             {
-                NaiveSerializer.Write(writer, item, options, itemHandler);
+                NaiveSerializer.Write(writer, item, options, _itemHandler);
             }
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
-        {
-            if (type == null)
-            {
-                type = typeof(object[]);
-            }
-
-            var itemType = type.IsArray ? type.GetElementType() : type.GetGenericArguments()[0];
-
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        {           
             var count = reader.ReadInt32();
-            var result = type.IsArray ? Array.CreateInstance(itemType, count) : (IList)Activator.CreateInstance(type);
-
-            IHandler itemHandler = null;
-
-            if (itemType != typeof(object))
-            {
-                itemHandler = NaiveSerializer.GetTypeHandler(itemType);
-            }
+            var result = Type.IsArray ? Array.CreateInstance(_itemType, count) : (IList)Activator.CreateInstance(Type);
 
             for (var i = 0; i < count; i++)
             {
-                object item = NaiveSerializer.Read(reader, itemType, options, itemHandler);
+                object item = NaiveSerializer.Read(reader, _itemType, options, _itemHandler);
 
-                if (type.IsArray)
+                if (Type.IsArray)
                 {
                     result[i] = item;
                 }

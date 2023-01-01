@@ -31,13 +31,18 @@ namespace Naive.Serializer
                 .Where(x => x.GetInterface(nameof(IHandler)) != null && !x.IsInterface && !x.IsAbstract))
             {
                 var handler = Activator.CreateInstance(handlerType) as IHandler;
-
+                
                 if (_handlers[(int)handler.HandlerType] != null)
                 {
                     throw new Exception($"Handler for {handler.HandlerType} already registered.");
                 }
 
                 _handlers[(int)handler.HandlerType] = handler;
+            }
+
+            foreach (var handler in _handlers.Where(x => x != null))
+            {
+                handler.SetType(null);
             }
         }
 
@@ -119,7 +124,8 @@ namespace Naive.Serializer
                 {
                     if (handler != null && handler.Match(type))
                     {
-                        var typeHandler = handler.Create(type);
+                        var typeHandler = (IHandler)Activator.CreateInstance(handler.GetType());
+                        typeHandler.SetType(type);
                         _typeHandlers.TryAdd(type, typeHandler);
                         result = typeHandler;
                         break;
@@ -156,7 +162,7 @@ namespace Naive.Serializer
 
         internal static object Read(BinaryReader reader, Type type, NaiveSerializerOptions options, IHandler handler = null)
         {
-            if ((byte)_handlers[(int)HandlerType.Null].Read(reader, type, options) == 0)
+            if ((byte)_handlers[(int)HandlerType.Null].Read(reader, options) == 0)
             {
                 return null;
             };
@@ -170,7 +176,7 @@ namespace Naive.Serializer
 
             if (handler == null)
             {
-                handler = type != null && type != typeof(object) ? GetTypeHandler(type) : GetHandler(handlerType);
+                handler = type != null ? GetTypeHandler(type) : GetHandler(handlerType);
             }
 
             if (handlerType != handler.HandlerType)
@@ -178,7 +184,7 @@ namespace Naive.Serializer
                 handler = GetHandler(handlerType);
             }
 
-            return handler.Read(reader, type, options);
+            return handler.Read(reader, options);
         }
     }
 }

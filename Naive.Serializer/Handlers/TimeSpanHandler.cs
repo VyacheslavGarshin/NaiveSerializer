@@ -18,7 +18,7 @@ namespace Naive.Serializer.Handlers
             writer.Write(((TimeSpan)obj).TotalMilliseconds);
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
             return TimeSpan.FromMilliseconds(reader.ReadDouble());
         }

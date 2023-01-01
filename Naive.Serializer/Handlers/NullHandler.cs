@@ -17,7 +17,7 @@ namespace Naive.Serializer.Handlers
             writer.Write((byte)(obj == null ? 0 : 1));
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
             return reader.ReadByte();
         }

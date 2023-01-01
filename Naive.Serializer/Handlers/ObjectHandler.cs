@@ -14,49 +14,54 @@ namespace Naive.Serializer.Handlers
 
         private ConcurrentDictionary<string, Property> _properties = new();
 
-        private Property[] _sortedProperties;
+        private Property[] _sortedProperties = new Property[0];
 
         public override bool Match(Type type)
         {
             return type.IsClass;
         }
 
-        public override IHandler Create(Type type)
+        public override void SetType(Type type)
         {
-            var result = base.Create(type) as ObjectHandler;
+            base.SetType(type);
 
-            var dataContract = type.GetCustomAttribute<DataContractAttribute>();
-
-            var definitions = type.GetProperties()
-                .Where(x =>
-                    x.CanRead
-                    && x.CanWrite
-                    && x.GetCustomAttribute<IgnoreDataMemberAttribute>() == null
-                    && (dataContract == null || x.GetCustomAttribute<DataMemberAttribute>() != null))
-                .Select(x => new Property { Info = x, Name = x.Name }).ToArray();
-
-            foreach (var definition in definitions)
+            if (Type == null)
             {
-                var propertyInfo = definition.Info;
+                Type = typeof(object);
+            }
+            else
+            {
+                var dataContract = Type.GetCustomAttribute<DataContractAttribute>();
 
-                var dataMember = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+                var definitions = Type.GetProperties()
+                    .Where(x =>
+                        x.CanRead
+                        && x.CanWrite
+                        && x.GetCustomAttribute<IgnoreDataMemberAttribute>() == null
+                        && (dataContract == null || x.GetCustomAttribute<DataMemberAttribute>() != null))
+                    .Select(x => new Property { Info = x, Name = x.Name }).ToArray();
 
-                if (dataMember != null)
+                foreach (var definition in definitions)
                 {
-                    definition.Order = dataMember.Order;
+                    var propertyInfo = definition.Info;
 
-                    if (!string.IsNullOrEmpty(dataMember.Name))
+                    var dataMember = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+
+                    if (dataMember != null)
                     {
-                        definition.Name = dataMember.Name;
+                        definition.Order = dataMember.Order;
+
+                        if (!string.IsNullOrEmpty(dataMember.Name))
+                        {
+                            definition.Name = dataMember.Name;
+                        }
                     }
+
+                    _properties.TryAdd(definition.Name, definition);
                 }
 
-                result._properties.TryAdd(definition.Name, definition);
+                _sortedProperties = definitions.OrderBy(x => x.Order).ToArray();
             }
-
-            result._sortedProperties = definitions.OrderBy(x => x.Order).ToArray();
-
-            return result;
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -78,10 +83,10 @@ namespace Naive.Serializer.Handlers
             writer.Write(string.Empty);
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var isObject = type != null;
-            var result = isObject ? Activator.CreateInstance(type) : new Dictionary<string, object>();
+            var isObject = Type != null;
+            var result = isObject ? Activator.CreateInstance(Type) : new Dictionary<string, object>();
 
             do
             {

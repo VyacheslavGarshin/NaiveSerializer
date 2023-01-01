@@ -20,7 +20,7 @@ namespace Naive.Serializer.Handlers
             throw new NotImplementedException();
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
             throw new NotImplementedException();
         }

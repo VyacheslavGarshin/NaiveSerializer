@@ -19,10 +19,10 @@ namespace Naive.Serializer.Handlers
             NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, options);
         }
 
-        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, typeof(DateTime), options);
-            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, typeof(TimeSpan), options);
+            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, options);
+            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, options);
             return new DateTimeOffset(dateTime, offset);
         }
     }

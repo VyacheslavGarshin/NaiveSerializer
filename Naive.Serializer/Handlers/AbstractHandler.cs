@@ -6,7 +6,7 @@ namespace Naive.Serializer.Handlers
     public abstract class AbstractHandler<T> : IHandler
         where T : IHandler, new()
     {
-        public Type WriteType { get; set; }
+        public Type Type { get; set; }
 
         public virtual HandlerType HandlerType => throw new NotImplementedException();
 
@@ -15,9 +15,9 @@ namespace Naive.Serializer.Handlers
             throw new NotImplementedException();
         }
 
-        public virtual IHandler Create(Type type)
+        public virtual void SetType(Type type)
         {
-            return new T { WriteType = type };
+            Type = type;
         }
 
         public virtual void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -25,7 +25,7 @@ namespace Naive.Serializer.Handlers
             throw new NotImplementedException();
         }
 
-        public virtual object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
+        public virtual object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
             throw new NotImplementedException();
         }
