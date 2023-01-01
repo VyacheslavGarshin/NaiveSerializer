@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Naive.Serializer;
+using System;
 using System.IO;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class EnumHandler : AbstractHandler<EnumHandler>
     {
@@ -20,7 +21,7 @@ namespace NaiveSerializer.Handlers
         public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
             var value = reader.ReadInt32();
-            
+
             if (type == null)
             {
                 return value;

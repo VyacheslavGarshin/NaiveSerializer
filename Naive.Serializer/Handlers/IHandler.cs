@@ -1,7 +1,8 @@
 ﻿using System.IO;
 using System;
+using Naive.Serializer;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public interface IHandler
     {

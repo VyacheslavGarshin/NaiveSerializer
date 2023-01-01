@@ -1,11 +1,11 @@
-﻿using NaiveSerializer.Handlers;
+﻿using Naive.Serializer.Handlers;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace NaiveSerializer
+namespace Naive.Serializer
 {
     public static class NaiveSerializer
     {
@@ -66,7 +66,7 @@ namespace NaiveSerializer
         }
 
         public static T Deserialize<T>(byte[] bytes, NaiveSerializerOptions options = null)
-        { 
+        {
             return (T)Deserialize(bytes, typeof(T), options);
         }
 
@@ -83,7 +83,7 @@ namespace NaiveSerializer
             }
 
             using var ms = new MemoryStream(bytes);
-            
+
             return Deserialize(ms, type, options);
         }
 
@@ -148,7 +148,7 @@ namespace NaiveSerializer
             {
                 handler = GetTypeHandler(obj.GetType());
             }
-            
+
             writer.Write((byte)handler.HandlerType);
 
             handler.Write(writer, obj, options);
@@ -179,6 +179,6 @@ namespace NaiveSerializer
             }
 
             return handler.Read(reader, type, options);
-        }       
+        }
     }
 }

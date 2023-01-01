@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class ObjectHandler : AbstractHandler<ObjectHandler>
     {
@@ -28,9 +28,9 @@ namespace NaiveSerializer.Handlers
             var dataContract = type.GetCustomAttribute<DataContractAttribute>();
 
             var definitions = type.GetProperties()
-                .Where(x => 
-                    x.CanRead 
-                    && x.CanWrite 
+                .Where(x =>
+                    x.CanRead
+                    && x.CanWrite
                     && x.GetCustomAttribute<IgnoreDataMemberAttribute>() == null
                     && (dataContract == null || x.GetCustomAttribute<DataMemberAttribute>() != null))
                 .Select(x => new Property { Info = x, Name = x.Name }).ToArray();
@@ -99,7 +99,7 @@ namespace NaiveSerializer.Handlers
                     property.Handler ??= NaiveSerializer.GetTypeHandler(property.Info.PropertyType);
 
                     value = NaiveSerializer.Read(reader, property.Info.PropertyType, options, property.Handler);
-                    
+
                     property.Info.SetValue(result, value);
                 }
                 else
@@ -131,7 +131,7 @@ namespace NaiveSerializer.Handlers
 
             public PropertyInfo Info { get; set; }
 
-            public IHandler Handler { get; set; }            
+            public IHandler Handler { get; set; }
 
             public override string ToString()
             {

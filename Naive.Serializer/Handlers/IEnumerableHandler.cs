@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Naive.Serializer;
+using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class IEnumerableHandler : AbstractHandler<IEnumerableHandler>
     {

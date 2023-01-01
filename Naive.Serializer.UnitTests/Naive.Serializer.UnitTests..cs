@@ -2,7 +2,7 @@ using FluentAssertions;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace NaiveSerializer.UnitTests
+namespace Naive.Serializer.UnitTests
 {
     public class NaiveSerializerUnitTests
     {
@@ -206,7 +206,7 @@ namespace NaiveSerializer.UnitTests
             result.Guid.Should().Be(value.Guid);
             result.Int.Should().Be(value.Int);
         }
-        
+
         static object[] TestObjectWithoutContractCases =
         {
             new []{ new ObjectWithoutContract {

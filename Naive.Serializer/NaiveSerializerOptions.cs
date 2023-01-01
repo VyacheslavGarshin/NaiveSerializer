@@ -1,4 +1,4 @@
-﻿namespace NaiveSerializer
+﻿namespace Naive.Serializer
 {
     public class NaiveSerializerOptions
     {

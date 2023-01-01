@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class ICollectionHandler : AbstractHandler<ICollectionHandler>
     {

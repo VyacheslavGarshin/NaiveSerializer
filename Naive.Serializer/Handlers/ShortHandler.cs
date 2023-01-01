@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Naive.Serializer;
+using System;
 using System.IO;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class ShortHandler : AbstractHandler<ShortHandler>
     {

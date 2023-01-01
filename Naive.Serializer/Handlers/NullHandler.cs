@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace NaiveSerializer.Handlers
+namespace Naive.Serializer.Handlers
 {
     public class NullHandler : AbstractHandler<NullHandler>
     {

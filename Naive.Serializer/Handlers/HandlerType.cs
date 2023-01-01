@@ -1,4 +1,4 @@
-﻿namespace NaiveSerializer.Handlers
+﻿namespace Naive.Serializer.Handlers
 {
     public enum HandlerType
     {

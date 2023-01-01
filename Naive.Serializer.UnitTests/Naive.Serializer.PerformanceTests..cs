@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace NaiveSerializer.UnitTests
+namespace Naive.Serializer.UnitTests
 {
     public class NaiveSerializerPerformanceTests
     {
@@ -55,13 +55,13 @@ namespace NaiveSerializer.UnitTests
             }
             sw.Stop();
             Console.WriteLine($"Bois serialize time: {sw.Elapsed.TotalMilliseconds}, bytes: {bBytes?.Length}");
-            
+
             sw.Restart();
             for (var i = 0; i < count; i++)
             {
                 NaiveSerializer.Deserialize(bytes, obj?.GetType());
             }
-            sw.Stop();            
+            sw.Stop();
             Console.WriteLine($"Naive deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             sw.Restart();
