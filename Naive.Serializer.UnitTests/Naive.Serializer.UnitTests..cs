@@ -265,7 +265,7 @@ namespace Naive.Serializer.UnitTests
         [TestCaseSource(nameof(TestPlainObjectCases))]
         public void TestPlainObject(PlainObject value)
         {
-            var result = (PlainObject)ThereAndBack(value, false, false);
+            var result = (PlainObject)ThereAndBack(value, false, true);
         }
 
         static object[] TestPlainObjectCases =
@@ -274,7 +274,7 @@ namespace Naive.Serializer.UnitTests
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 5,
                 Ints = new int[] { 5, 1 },
-                PObject= new () { Int = 1 , Ints = new int[] {} },
+                PObject= new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
                 PObjects= new PlainObject[] { new (), null }
             } },
         };

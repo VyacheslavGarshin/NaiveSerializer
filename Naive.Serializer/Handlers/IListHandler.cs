@@ -54,11 +54,12 @@ namespace Naive.Serializer.Handlers
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {           
             var count = reader.ReadInt32();
+
             var result = Type.IsArray ? Array.CreateInstance(_itemType, count) : (IList)Activator.CreateInstance(Type);
 
             for (var i = 0; i < count; i++)
             {
-                object item = NaiveSerializer.Read(reader, _itemType, options, _itemHandler);
+                var item = NaiveSerializer.Read(reader, _itemType, options, _itemHandler);
 
                 if (Type.IsArray)
                 {

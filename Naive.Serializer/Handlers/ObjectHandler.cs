@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Naive.Serializer.Handlers
 {
@@ -57,6 +59,9 @@ namespace Naive.Serializer.Handlers
                         }
                     }
 
+                    definition.Getter = CreateGetterLambda(definition.Info);
+                    definition.Setter = CreateSetterLambda(definition.Info);
+
                     _properties.TryAdd(definition.Name, definition);
                 }
 
@@ -68,7 +73,7 @@ namespace Naive.Serializer.Handlers
         {
             foreach (var property in _sortedProperties)
             {
-                var value = property.Info.GetValue(obj);
+                var value = property.Getter(obj);
 
                 if (value != null || !options.IgnoreNullValue)
                 {
@@ -85,7 +90,8 @@ namespace Naive.Serializer.Handlers
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var isObject = Type != null;
+            var isObject = Type != typeof(object);
+
             var result = isObject ? Activator.CreateInstance(Type) : new Dictionary<string, object>();
 
             do
@@ -105,7 +111,7 @@ namespace Naive.Serializer.Handlers
 
                     value = NaiveSerializer.Read(reader, property.Info.PropertyType, options, property.Handler);
 
-                    property.Info.SetValue(result, value);
+                    property.Setter(result, value);
                 }
                 else
                 {
@@ -128,6 +134,28 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
+        private static Func<object, object> CreateGetterLambda(PropertyInfo property)
+        {
+            var objParameterExpr = Expression.Parameter(typeof(object), "instance");
+            var instanceExpr = Expression.TypeAs(objParameterExpr, property.DeclaringType);
+            var propertyExpr = Expression.Property(instanceExpr, property);
+            var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
+
+            return Expression.Lambda<Func<object, object>>(propertyObjExpr, objParameterExpr).Compile();
+        }
+
+        private static Action<object, object> CreateSetterLambda(PropertyInfo property)
+        {
+            var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
+            var instanceExpr = Expression.TypeAs(objInstanceExpr, property.DeclaringType);
+            var propertyExpr = Expression.Property(instanceExpr, property);
+            var objValueExpr = Expression.Parameter(typeof(object), "value");
+            var valueExpr = Expression.Convert(objValueExpr, property.PropertyType);
+            var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
+
+            return Expression.Lambda<Action<object, object>>(propertyAssignExpr, objInstanceExpr, objValueExpr).Compile();
+        }
+
         private class Property
         {
             public string Name { get; set; }
@@ -137,6 +165,10 @@ namespace Naive.Serializer.Handlers
             public PropertyInfo Info { get; set; }
 
             public IHandler Handler { get; set; }
+            
+            public Func<object, object> Getter { get; set; }
+            
+            public Action<object, object> Setter { get; set; }
 
             public override string ToString()
             {
