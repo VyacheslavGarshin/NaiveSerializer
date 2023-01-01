@@ -25,8 +25,9 @@
         Guid = 20,
         Enum = 21,
         IList = 22,
-        ICollection = 23,
-        IEnumerable = 24,
-        Object = 25,
+        IDictionary = 23,
+        ICollection = 24,
+        IEnumerable = 25,
+        Object = 26,
     }
 }

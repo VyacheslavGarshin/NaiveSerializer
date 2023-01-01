@@ -3,26 +3,21 @@ using System.IO;
 
 namespace NaiveSerializer.Handlers
 {
-    public class TimeSpanHandler : IHandler
+    public class TimeSpanHandler : AbstractHandler<TimeSpanHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.TimeSpan;
+        public override HandlerType HandlerType { get; } = HandlerType.TimeSpan;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type == typeof(TimeSpan) || type == typeof(TimeSpan?);
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write(((TimeSpan)obj).TotalMilliseconds);
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
             return TimeSpan.FromMilliseconds(reader.ReadDouble());
         }

@@ -3,31 +3,26 @@ using System.IO;
 
 namespace NaiveSerializer.Handlers
 {
-    public class DateTimeOffsetHandler : IHandler
+    public class DateTimeOffsetHandler : AbstractHandler<DateTimeOffsetHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.DateTimeOffset;
+        public override HandlerType HandlerType { get; } = HandlerType.DateTimeOffset;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?);
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             var value = (DateTimeOffset)obj;
-            NaiveSerializer.GetHandler(HandlerType.DateTime).Write(writer, value.DateTime, typeof(DateTime));
-            NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, typeof(TimeSpan));
+            NaiveSerializer.GetHandler(HandlerType.DateTime).Write(writer, value.DateTime, options);
+            NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, options);
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
-            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, typeof(DateTime));
-            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, typeof(TimeSpan));
+            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, typeof(DateTime), options);
+            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, typeof(TimeSpan), options);
             return new DateTimeOffset(dateTime, offset);
         }
     }

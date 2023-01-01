@@ -1,64 +1,62 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace NaiveSerializer.Handlers
 {
-    public class IListHandler : IHandler
+    public class IListHandler : AbstractHandler<IListHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.IList;
+        public override HandlerType HandlerType { get; } = HandlerType.IList;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type.GetInterfaces().Any(x => x == typeof(IList));
         }
 
-        public IHandler Create(Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
-            return null;
-        }
+            var list = (IList)obj;
 
-        public void Write(BinaryWriter writer, object obj, Type type)
-        {
-            var collection = (IList)obj;
-            
-            var itemType = type.IsArray ? type.GetElementType() : type.GetGenericArguments()[0];
-            var itemHandler = NaiveSerializer.GetTypeHandler(itemType);
-            var nullHandler = NaiveSerializer.GetHandler((byte)HandlerType.Null);
+            var itemType = WriteType.IsArray ? WriteType.GetElementType() : WriteType.GetGenericArguments()[0];
 
-            writer.Write(collection.Count);
+            IHandler itemHandler = null;
 
-            foreach (var item in collection)
+            if (itemType != typeof(object))
             {
-                nullHandler.Write(writer, item, itemType);
+                itemHandler = NaiveSerializer.GetTypeHandler(itemType);
+            }
 
-                if (item != null)
-                {
-                    itemHandler.Write(writer, item, itemType);
-                }
+            writer.Write(list.Count);
+
+            foreach (var item in list)
+            {
+                NaiveSerializer.Write(writer, item, options, itemHandler);
             }
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
+            if (type == null)
+            {
+                type = typeof(object[]);
+            }
+
             var itemType = type.IsArray ? type.GetElementType() : type.GetGenericArguments()[0];
 
             var count = reader.ReadInt32();
             var result = type.IsArray ? Array.CreateInstance(itemType, count) : (IList)Activator.CreateInstance(type);
 
-            var itemHandler = NaiveSerializer.GetTypeHandler(itemType);
-            var nullHandler = NaiveSerializer.GetHandler((byte)HandlerType.Null);
+            IHandler itemHandler = null;
+
+            if (itemType != typeof(object))
+            {
+                itemHandler = NaiveSerializer.GetTypeHandler(itemType);
+            }
 
             for (var i = 0; i < count; i++)
             {
-                object item = null;
-
-                if ((byte)nullHandler.Read(reader, itemType) != 0)
-                {
-                    item = itemHandler.Read(reader, itemType);
-                }
+                object item = NaiveSerializer.Read(reader, itemType, options, itemHandler);
 
                 if (type.IsArray)
                 {

@@ -3,26 +3,21 @@ using System.IO;
 
 namespace NaiveSerializer.Handlers
 {
-    public class FloatHandler : IHandler
+    public class FloatHandler : AbstractHandler<FloatHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.Float;
+        public override HandlerType HandlerType { get; } = HandlerType.Float;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type == typeof(float) || type == typeof(float?);
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write((float)obj);
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
             return reader.ReadSingle();
         }

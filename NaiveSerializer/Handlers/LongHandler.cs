@@ -3,26 +3,21 @@ using System.IO;
 
 namespace NaiveSerializer.Handlers
 {
-    public class LongHandler : IHandler
+    public class LongHandler : AbstractHandler<LongHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.Long;
+        public override HandlerType HandlerType { get; } = HandlerType.Long;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type == typeof(long) || type == typeof(long?);
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write((long)obj);
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
             return reader.ReadInt64();
         }

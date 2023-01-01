@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
 
 namespace NaiveSerializer.UnitTests
@@ -193,42 +192,132 @@ namespace NaiveSerializer.UnitTests
             new []{ new List<int?> { null, 1, 2 } },
             new []{ new List<string> { null, "AAA", string.Empty } },
             new []{ new string[] { null, "AAA", string.Empty } },
+            new []{ new object[] { null, 1, true, "AAA", 'c' } },
         };
 
-        [TestCaseSource(nameof(TestObjectCases))]
-        public void TestObject(object value)
+        [TestCaseSource(nameof(TestObjectWithoutContractCases))]
+        public void TestObjectWithoutContract(ObjectWithoutContract value)
         {
-            ThereAndBack(value);
+            var result = (ObjectWithoutContract)ThereAndBack(value, false, false);
+
+            result.GuidIgnored.Should().Be(Guid.Empty);
+            result.Guid.Should().Be(value.Guid);
+            result.Int.Should().Be(value.Int);
         }
-
-        private static void ThereAndBack(object value)
+        
+        static object[] TestObjectWithoutContractCases =
         {
-            using var stream = new MemoryStream();
-            NaiveSerializer.Serialize(value, stream);
-            stream.Position = 0;
-
-            var objD = NaiveSerializer.Deserialize(stream, value?.GetType());
-
-            objD.Should().BeEquivalentTo(value);
-            stream.Position.Should().Be(stream.Length);
-        }
-
-        static object[] TestObjectCases =
-        {
-            new []{ new A {
+            new []{ new ObjectWithoutContract {
+                GuidIgnored = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 5,
             } },
         };
 
-        public class A
+        public class ObjectWithoutContract
         {
             [IgnoreDataMember]
             public Guid GuidIgnored { get; set; }
 
             public Guid Guid { get; set; }
-            
+
             public int Int { get; set; }
+        }
+
+        [TestCaseSource(nameof(TestObjectWithContractCases))]
+        public void TestObjectWithContract(ObjectWithContract value)
+        {
+            var result = (ObjectWithContract)ThereAndBack(value, false, false);
+
+            result.GuidIgnored.Should().Be(Guid.Empty);
+            result.Guid.Should().Be(value.Guid);
+            result.IntIgnored.Should().Be(0);
+            result.Int.Should().Be(value.Int);
+        }
+
+        static object[] TestObjectWithContractCases =
+         {
+            new []{ new ObjectWithContract {
+                GuidIgnored = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                IntIgnored = 5,
+                Int = 5,
+            } },
+        };
+
+        [DataContract]
+        public class ObjectWithContract
+        {
+            [IgnoreDataMember]
+            public Guid GuidIgnored { get; set; }
+
+            [DataMember(Name = "G")]
+            public Guid Guid { get; set; }
+
+            public int IntIgnored { get; set; }
+
+            [DataMember]
+            public int Int { get; set; }
+        }
+
+        [TestCaseSource(nameof(TestPlainObjectCases))]
+        public void TestPlainObject(PlainObject value)
+        {
+            var result = (PlainObject)ThereAndBack(value, false, false);
+        }
+
+        static object[] TestPlainObjectCases =
+         {
+            new []{ new PlainObject {
+                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Int = 5,
+                Ints = new int[] { 5, 1 },
+                PObject= new () { Int = 1 , Ints = new int[] {} },
+                PObjects= new PlainObject[] { new (), null }
+            } },
+        };
+
+        public class PlainObject
+        {
+            public Guid Guid { get; set; }
+
+            public int Int { get; set; }
+
+            public string String { get; set; }
+
+            public int[] Ints { get; set; }
+
+            public string[] Strings { get; set; }
+
+            public PlainObject PObject { get; set; }
+
+            public PlainObject[] PObjects { get; set; }
+        }
+
+        private static object ThereAndBack(object value, bool check = true, bool notyped = true)
+        {
+            object result = null;
+
+            using var stream = new MemoryStream();
+            NaiveSerializer.Serialize(value, stream);
+
+            if (notyped)
+            {
+                stream.Position = 0;
+                result = NaiveSerializer.Deserialize(stream);
+            }
+
+            stream.Position = 0;
+            result = NaiveSerializer.Deserialize(stream, value?.GetType());
+
+            if (check)
+            {
+                result.Should().BeEquivalentTo(value);
+            }
+
+            stream.Position.Should().Be(stream.Length);
+
+            return result;
         }
     }
 }

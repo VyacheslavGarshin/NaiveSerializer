@@ -5,26 +5,21 @@ using System.Linq;
 
 namespace NaiveSerializer.Handlers
 {
-    public class IEnumerableHandler : IHandler
+    public class IEnumerableHandler : AbstractHandler<IEnumerableHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.IEnumerable;
+        public override HandlerType HandlerType { get; } = HandlerType.IEnumerable;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
             throw new NotImplementedException();
         }

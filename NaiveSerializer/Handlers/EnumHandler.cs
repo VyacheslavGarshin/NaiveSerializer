@@ -3,28 +3,37 @@ using System.IO;
 
 namespace NaiveSerializer.Handlers
 {
-    public class EnumHandler : IHandler
+    public class EnumHandler : AbstractHandler<EnumHandler>
     {
-        public HandlerType HandlerType { get; } = HandlerType.Enum;
+        public override HandlerType HandlerType { get; } = HandlerType.Enum;
 
-        public bool Match(Type type)
+        public override bool Match(Type type)
         {
             return type.IsEnum || (Nullable.GetUnderlyingType(type)?.IsEnum ?? false);
         }
 
-        public IHandler Create(Type type)
-        {
-            return null;
-        }
-
-        public void Write(BinaryWriter writer, object obj, Type type)
+        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write((int)obj);
         }
 
-        public object Read(BinaryReader reader, Type type)
+        public override object Read(BinaryReader reader, Type type, NaiveSerializerOptions options)
         {
-            return Enum.ToObject(Nullable.GetUnderlyingType(type) ?? type, reader.ReadInt32());
+            var value = reader.ReadInt32();
+            
+            if (type == null)
+            {
+                return value;
+            }
+
+            var enumType = Nullable.GetUnderlyingType(type) ?? type;
+
+            if (enumType == null || !enumType.IsEnum)
+            {
+                return value;
+            }
+
+            return Enum.ToObject(enumType, value);
         }
     }
 }

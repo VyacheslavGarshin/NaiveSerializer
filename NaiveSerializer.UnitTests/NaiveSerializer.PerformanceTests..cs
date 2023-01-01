@@ -29,7 +29,7 @@ namespace NaiveSerializer.UnitTests
             byte[] jBytes = null;
             for (var i = 0; i < count; i++)
             {
-                jBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
+                jBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj, new JsonSerializerSettings()));
             }
             sw.Stop();
             Console.WriteLine($"Json serialize time: {sw.Elapsed.TotalMilliseconds}, bytes: {jBytes.Length}");
@@ -62,6 +62,20 @@ namespace NaiveSerializer.UnitTests
             new []{ 100000, (object)new List<string> { null, "AAA", "BBB", string.Empty } },
             new []{ 100000, (object)new string[] { null, "AAA", "BBB", string.Empty } },
             new []{ 100000, (object)new byte?[] { null, 1, 2, 3, 4, 5, 6 } },
+            new []{ 100000, (object)new PlainObject {
+                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Int = 10,
+                String = "Some small string"
+            }},
         };
+
+        public class PlainObject
+        {
+            public Guid Guid { get; set; }
+
+            public int Int { get; set; }
+
+            public string String { get; set; }
+        }
     }
 }

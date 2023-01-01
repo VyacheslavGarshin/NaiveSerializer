@@ -28,7 +28,7 @@ namespace NaiveSerializer
             _handlers = new IHandler[maxHandlerType + 1];
 
             foreach (var handlerType in typeof(NaiveSerializer).Assembly.GetTypes()
-                .Where(x => x.GetInterface(nameof(IHandler)) != null && !x.IsInterface))
+                .Where(x => x.GetInterface(nameof(IHandler)) != null && !x.IsInterface && !x.IsAbstract))
             {
                 var handler = Activator.CreateInstance(handlerType) as IHandler;
 
@@ -41,41 +41,41 @@ namespace NaiveSerializer
             }
         }
 
-        public static byte[] Serialize(object obj)
+        public static byte[] Serialize(object obj, NaiveSerializerOptions options = null)
         {
             using var ms = new MemoryStream();
-            Serialize(obj, ms);
+            Serialize(obj, ms, options);
             return ms.ToArray();
         }
 
-        public static void Serialize(object obj, Stream stream)
+        public static void Serialize(object obj, Stream stream, NaiveSerializerOptions options = null)
         {
             using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
-            Serialize(writer, obj);
+            Write(writer, obj, options ?? new(), null);
         }
 
-        public static object Deserialize(byte[] bytes)
+        public static object Deserialize(byte[] bytes, NaiveSerializerOptions options = null)
         {
-            return Deserialize(bytes, null);
+            return Deserialize(bytes, null, options);
         }
 
-        public static object Deserialize(Stream stream)
+        public static object Deserialize(Stream stream, NaiveSerializerOptions options = null)
         {
-            return Deserialize(stream, null);
+            return Deserialize(stream, null, options);
         }
 
-        public static T Deserialize<T>(byte[] bytes)
+        public static T Deserialize<T>(byte[] bytes, NaiveSerializerOptions options = null)
         { 
-            return (T)Deserialize(bytes, typeof(T));
+            return (T)Deserialize(bytes, typeof(T), options);
         }
 
-        public static T Deserialize<T>(Stream stream)
+        public static T Deserialize<T>(Stream stream, NaiveSerializerOptions options = null)
         {
-            return (T)Deserialize(stream, typeof(T));
+            return (T)Deserialize(stream, typeof(T), options);
         }
 
-        public static object Deserialize(byte[] bytes, Type type)
+        public static object Deserialize(byte[] bytes, Type type, NaiveSerializerOptions options = null)
         {
             if (bytes == null || bytes.Length == 0)
             {
@@ -84,10 +84,10 @@ namespace NaiveSerializer
 
             using var ms = new MemoryStream(bytes);
             
-            return Deserialize(ms, type);
+            return Deserialize(ms, type, options);
         }
 
-        public static object Deserialize(Stream stream, Type type)
+        public static object Deserialize(Stream stream, Type type, NaiveSerializerOptions options = null)
         {
             if (stream.Length == 0)
             {
@@ -96,10 +96,10 @@ namespace NaiveSerializer
 
             using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-            return Deserialize(reader, type);
+            return Read(reader, type, options ?? new());
         }
 
-        public static IHandler GetHandler(HandlerType handlerType)
+        internal static IHandler GetHandler(HandlerType handlerType)
         {
             var result = _handlers[(byte)handlerType];
 
@@ -111,7 +111,7 @@ namespace NaiveSerializer
             return result;
         }
 
-        public static IHandler GetTypeHandler(Type type)
+        internal static IHandler GetTypeHandler(Type type)
         {
             if (!_typeHandlers.TryGetValue(type, out var result))
             {
@@ -119,8 +119,9 @@ namespace NaiveSerializer
                 {
                     if (handler != null && handler.Match(type))
                     {
-                        _typeHandlers.TryAdd(type, handler.Create(type) ?? handler);
-                        result = handler;
+                        var typeHandler = handler.Create(type);
+                        _typeHandlers.TryAdd(type, typeHandler);
+                        result = typeHandler;
                         break;
                     }
                 }
@@ -134,39 +135,50 @@ namespace NaiveSerializer
             return result;
         }
 
-        private static void Serialize(BinaryWriter writer, object obj)
+        internal static void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options, IHandler handler = null)
         {
-            _handlers[(int)HandlerType.Null].Write(writer, obj, null);
+            _handlers[(int)HandlerType.Null].Write(writer, obj, options);
 
             if (obj == null)
             {
                 return;
             }
 
-            var type = obj.GetType();
-
-            var handler = GetTypeHandler(type);
+            if (handler == null)
+            {
+                handler = GetTypeHandler(obj.GetType());
+            }
             
             writer.Write((byte)handler.HandlerType);
 
-            handler.Write(writer, obj, type);
+            handler.Write(writer, obj, options);
         }
 
-        private static object Deserialize(BinaryReader reader, Type type)
+        internal static object Read(BinaryReader reader, Type type, NaiveSerializerOptions options, IHandler handler = null)
         {
-            if ((byte)_handlers[(int)HandlerType.Null].Read(reader, type) == 0)
+            if ((byte)_handlers[(int)HandlerType.Null].Read(reader, type, options) == 0)
             {
                 return null;
             };
 
-            var handlerType = reader.ReadByte();
+            var handlerType = (HandlerType)reader.ReadByte();
 
-            if (handlerType > _handlers.Length - 1)
+            if ((int)handlerType > _handlers.Length - 1)
             {
                 throw new IndexOutOfRangeException($"Handler type {handlerType} is out of range.");
             }
 
-            return GetHandler((HandlerType)handlerType).Read(reader, type);
+            if (handler == null)
+            {
+                handler = type != null && type != typeof(object) ? GetTypeHandler(type) : GetHandler(handlerType);
+            }
+
+            if (handlerType != handler.HandlerType)
+            {
+                handler = GetHandler(handlerType);
+            }
+
+            return handler.Read(reader, type, options);
         }       
     }
 }
