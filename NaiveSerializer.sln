@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaiveSerializer", "NaiveSerializer\NaiveSerializer.csproj", "{046C2BA3-B87D-43A1-9EDB-F66C231D0A0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naive.Serializer", "Naive.Serializer\Naive.Serializer.csproj", "{046C2BA3-B87D-43A1-9EDB-F66C231D0A0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaiveSerializer.UnitTests", "NaiveSerializer.UnitTests\NaiveSerializer.UnitTests.csproj", "{A5BD1167-AE86-47AF-8E14-C501FFC42B77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naive.Serializer.UnitTests", "Naive.Serializer.UnitTests\Naive.Serializer.UnitTests.csproj", "{A5BD1167-AE86-47AF-8E14-C501FFC42B77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

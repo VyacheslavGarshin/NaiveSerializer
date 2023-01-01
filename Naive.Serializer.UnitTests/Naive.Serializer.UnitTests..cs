@@ -1,5 +1,6 @@
 using FluentAssertions;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace NaiveSerializer.UnitTests
 {
@@ -189,6 +190,7 @@ namespace NaiveSerializer.UnitTests
 
         static object[] TestIListCases =
         {
+            new []{ new byte?[] { null, 1, 2 } },
             new []{ new List<int?> { null, 1, 2 } },
             new []{ new List<string> { null, "AAA", string.Empty } },
             new []{ new string[] { null, "AAA", string.Empty } },
@@ -300,6 +302,8 @@ namespace NaiveSerializer.UnitTests
 
             using var stream = new MemoryStream();
             NaiveSerializer.Serialize(value, stream);
+
+            Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
             if (notyped)
             {
