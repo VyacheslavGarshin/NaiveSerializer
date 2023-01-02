@@ -45,17 +45,10 @@ namespace Naive.Serializer.Handlers
                 }
 
                 var dataContract = Type.GetCustomAttribute<DataContractAttribute>();
-
-                var definitionCandidates =
-                    Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
-                        .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
-                    Type.GetFields().Where(x => x.IsPublic)
-                        .Select(x => new Property { FieldInfo = x, Name = x.Name }))
-                    .ToArray();
-
+                
                 var definitions = new List<Property>();
 
-                foreach (var definition in definitionCandidates)
+                foreach (var definition in GetDefinitionCandidates())
                 {
                     var memberInfo = (MemberInfo)definition.PropertyInfo ?? definition.FieldInfo;
 
@@ -65,20 +58,7 @@ namespace Naive.Serializer.Handlers
                         continue;
                     }
 
-                    var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
-
-                    if (dataMember != null)
-                    {
-                        definition.Order = dataMember.Order;
-
-                        if (!string.IsNullOrEmpty(dataMember.Name))
-                        {
-                            definition.Name = dataMember.Name;
-                        }
-                    }
-
-                    definition.GetValue = CreateGetter(definition);
-                    definition.SetValue = CreateSetter(definition);
+                    PrepareDefinition(definition, memberInfo);
 
                     _properties.TryAdd(definition.Name, definition);
                     definitions.Add(definition);
@@ -88,6 +68,34 @@ namespace Naive.Serializer.Handlers
             }
 
             _isObject = Type != typeof(object);
+        }
+
+        private Property[] GetDefinitionCandidates()
+        {
+            return 
+                Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
+                    .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
+                Type.GetFields().Where(x => x.IsPublic)
+                    .Select(x => new Property { FieldInfo = x, Name = x.Name }))
+                .ToArray();
+        }
+
+        private void PrepareDefinition(Property definition, MemberInfo memberInfo)
+        {
+            var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+
+            if (dataMember != null)
+            {
+                definition.Order = dataMember.Order;
+
+                if (!string.IsNullOrEmpty(dataMember.Name))
+                {
+                    definition.Name = dataMember.Name;
+                }
+            }
+
+            definition.GetValue = CreateGetter(definition);
+            definition.SetValue = CreateSetter(definition);
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -158,6 +166,11 @@ namespace Naive.Serializer.Handlers
             return property.PropertyInfo?.PropertyType ?? property.FieldInfo.FieldType;
         }
 
+        private static Type GetDeclaringType(Property property)
+        {
+            return property.PropertyInfo?.DeclaringType ?? property.FieldInfo.DeclaringType;
+        }
+
         private static Func<object, object> CreateGetter(Property property)
         {
             var declaringType = GetDeclaringType(property);
@@ -172,11 +185,6 @@ namespace Naive.Serializer.Handlers
             var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
 
             return Expression.Lambda<Func<object, object>>(propertyObjExpr, objInstanceExpr).Compile();
-        }
-
-        private static Type GetDeclaringType(Property property)
-        {
-            return property.PropertyInfo?.DeclaringType ?? property.FieldInfo.DeclaringType;
         }
 
         private static Action<object, object> CreateSetter(Property property)
