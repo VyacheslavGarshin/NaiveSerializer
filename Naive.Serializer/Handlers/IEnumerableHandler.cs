@@ -20,6 +20,7 @@ namespace Naive.Serializer.Handlers
         private bool _isCollection;
         
         private bool _isIEnumerable;
+
         private bool _isList;
 
         public override bool Match(Type type)
