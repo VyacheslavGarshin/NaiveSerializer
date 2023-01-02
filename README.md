@@ -15,7 +15,7 @@ Plans:
 Performance
 ===========
 
-Couple of times better than NewtonJson, a bit slower than Bois.
+Couple of times better than NewtonJson, a bit slower than [Bois](https://github.com/salarcode/Bois).
 
 Usage
 =====
