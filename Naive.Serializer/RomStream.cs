@@ -30,7 +30,7 @@ namespace Naive.Serializer
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            _readOnlyMemory.Slice((int)_position, count).CopyTo(buffer.AsMemory(offset, count));
+            _readOnlyMemory.Slice((int)_position, count).CopyTo(offset != 0 ? buffer.AsMemory(offset, count) : buffer);
             _position += count;
             return count;
         }
