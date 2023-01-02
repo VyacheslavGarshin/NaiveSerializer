@@ -26,18 +26,20 @@ NaiveSerializer.Serialize(value, stream);
 
 stream.Position = 0;
 result = NaiveSerializer.Deserialize(stream, value.GetType());
-```
 
-or 
+// or 
 
-```csharp
 var bytes = NaiveSerializer.Serialize(value);
 result = NaiveSerializer.Deserialize(bytes, value.GetType());
 ```
 
-or 
+// or 
 
-```csharp
 var bytes = NaiveSerializer.Serialize(value);
 result = NaiveSerializer.Deserialize<ValueType>(bytes);
+
+// or 
+
+var bytes = NaiveSerializer.Serialize(value);
+result = NaiveSerializer.Deserialize(bytes);
 ```
