@@ -25,12 +25,19 @@ using var stream = new MemoryStream();
 NaiveSerializer.Serialize(value, stream);
 
 stream.Position = 0;
-result = NaiveSerializer.Deserialize(stream);
+result = NaiveSerializer.Deserialize(stream, value.GetType());
 ```
 
 or 
 
 ```csharp
 var bytes = NaiveSerializer.Serialize(value);
-result = NaiveSerializer.Deserialize(bytes);
+result = NaiveSerializer.Deserialize(bytes, value.GetType());
+```
+
+or 
+
+```csharp
+var bytes = NaiveSerializer.Serialize(value);
+result = NaiveSerializer.Deserialize<ValueType>(bytes);
 ```
