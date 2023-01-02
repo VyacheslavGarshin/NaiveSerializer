@@ -10,7 +10,7 @@ Features:
 + Respects `DataContract` attributes
 
 Plans:
-+ remove payload redundancy on lists and dictionaries
++ Remove payload redundancy on lists and dictionaries
 
 Performance
 ===========
