@@ -1,5 +1,5 @@
-NaiveMq
-=======
+NaiveSerializer
+===============
 
 .NET Standard binary serialization library.
 
