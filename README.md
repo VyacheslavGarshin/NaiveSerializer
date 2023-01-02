@@ -34,5 +34,6 @@ result = NaiveSerializer.Deserialize(bytes, value.GetType());
 // or 
 result = NaiveSerializer.Deserialize<ValueType>(bytes);
 
+// or unknown payload to object/dictionary
 result = NaiveSerializer.Deserialize(bytes);
 ```
