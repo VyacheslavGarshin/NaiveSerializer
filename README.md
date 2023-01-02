@@ -31,7 +31,6 @@ result = NaiveSerializer.Deserialize(stream, value.GetType());
 
 var bytes = NaiveSerializer.Serialize(value);
 result = NaiveSerializer.Deserialize(bytes, value.GetType());
-```
 
 // or 
 
