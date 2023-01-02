@@ -56,6 +56,12 @@ namespace Naive.Serializer
             Write(writer, obj, options ?? new());
         }
 
+        public static object Deserialize(ReadOnlyMemory<byte> rom, NaiveSerializerOptions options = null)
+        {
+            using var stream = new RomStream(rom);
+            return Deserialize(stream, null, options);
+        }
+
         public static object Deserialize(byte[] bytes, NaiveSerializerOptions options = null)
         {
             return Deserialize(bytes, null, options);
@@ -66,6 +72,12 @@ namespace Naive.Serializer
             return Deserialize(stream, null, options);
         }
 
+        public static T Deserialize<T>(ReadOnlyMemory<byte> rom, NaiveSerializerOptions options = null)
+        {
+            using var stream = new RomStream(rom);
+            return (T)Deserialize(stream, typeof(T), options);
+        }
+
         public static T Deserialize<T>(byte[] bytes, NaiveSerializerOptions options = null)
         {
             return (T)Deserialize(bytes, typeof(T), options);
@@ -74,6 +86,18 @@ namespace Naive.Serializer
         public static T Deserialize<T>(Stream stream, NaiveSerializerOptions options = null)
         {
             return (T)Deserialize(stream, typeof(T), options);
+        }
+
+        public static object Deserialize(ReadOnlyMemory<byte> bytes, Type type, NaiveSerializerOptions options = null)
+        {
+            if (bytes.Length == 0)
+            {
+                return null;
+            }
+
+            using var stream = new RomStream(bytes);
+
+            return Deserialize(stream, type, options);
         }
 
         public static object Deserialize(byte[] bytes, Type type, NaiveSerializerOptions options = null)
