@@ -279,10 +279,10 @@ namespace Naive.Serializer.UnitTests
         }
 
         [TestCaseSource(nameof(TestObjectCases))]
-        public void TestObject(string name, object value, bool check)
+        public void TestObject(string name, object value, bool check, Type deserializeType)
         {
-            var result = ThereAndBack(value, true, false);
-            result = ThereAndBack(value, false, check);
+            var result = ThereAndBack(value, true, false, null, deserializeType);
+            result = ThereAndBack(value, false, check, null, deserializeType);
         }
 
         static object[] TestObjectCases =
@@ -293,12 +293,19 @@ namespace Naive.Serializer.UnitTests
                 Ints = new int[] { 5, 1 },
                 PObject = new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
                 PObjects = new PlainObject[] { new (), null }
-            }, true },
+            }, true, null },
             new object[]{ "plain struct", new PlainStruct { Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 5,
                 Ints = new int[] { 5, 1 },
                 PStructs = new PlainStruct?[] { new() { String = "*" }, null }
-            }, false },
+            }, false, null },
+            new object[]{ "plain object to lesser one", new PlainObject {
+                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Int = 5,
+                Ints = new int[] { 5, 1 },
+                PObject = new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
+                PObjects = new PlainObject[] { new (), null }
+            }, false, typeof(PlainObjectLesser) },
         };
 
         public class PlainObject
@@ -318,6 +325,17 @@ namespace Naive.Serializer.UnitTests
             public PlainObject[] PObjects { get; set; }
         }
 
+        public class PlainObjectLesser
+        {
+            public Guid Guid { get; set; }
+
+            public int Int { get; set; }
+
+            public string String { get; set; }
+
+            public PlainObject PObject { get; set; }
+        }
+
         public struct PlainStruct
         {
             public Guid Guid { get; set; }
@@ -333,7 +351,7 @@ namespace Naive.Serializer.UnitTests
             public PlainStruct?[] PStructs { get; set; }
         }
 
-        private static object ThereAndBack(object value, bool? notyped = null, bool check = true, object alrernativeValue = null)
+        private static object ThereAndBack(object value, bool? notyped = null, bool check = true, object alrernativeValue = null, Type deserializeType = null)
         {
             object result = null;
 
@@ -357,7 +375,7 @@ namespace Naive.Serializer.UnitTests
             if (notyped != true)
             {
                 stream.Position = 0;
-                result = NaiveSerializer.Deserialize(stream, value?.GetType());
+                result = NaiveSerializer.Deserialize(stream, deserializeType ?? value?.GetType());
 
                 if (check)
                 {
