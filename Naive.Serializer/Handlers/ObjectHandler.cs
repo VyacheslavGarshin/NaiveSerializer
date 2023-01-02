@@ -70,34 +70,6 @@ namespace Naive.Serializer.Handlers
             _isObject = Type != typeof(object);
         }
 
-        private Property[] GetDefinitionCandidates()
-        {
-            return 
-                Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
-                    .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
-                Type.GetFields().Where(x => x.IsPublic)
-                    .Select(x => new Property { FieldInfo = x, Name = x.Name }))
-                .ToArray();
-        }
-
-        private void PrepareDefinition(Property definition, MemberInfo memberInfo)
-        {
-            var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
-
-            if (dataMember != null)
-            {
-                definition.Order = dataMember.Order;
-
-                if (!string.IsNullOrEmpty(dataMember.Name))
-                {
-                    definition.Name = dataMember.Name;
-                }
-            }
-
-            definition.GetValue = CreateGetter(definition);
-            definition.SetValue = CreateSetter(definition);
-        }
-
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
             foreach (var property in _sortedProperties)
@@ -159,6 +131,34 @@ namespace Naive.Serializer.Handlers
             } while (true);
 
             return result;
+        }
+
+        private Property[] GetDefinitionCandidates()
+        {
+            return
+                Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
+                    .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
+                Type.GetFields().Where(x => x.IsPublic)
+                    .Select(x => new Property { FieldInfo = x, Name = x.Name }))
+                .ToArray();
+        }
+
+        private static void PrepareDefinition(Property definition, MemberInfo memberInfo)
+        {
+            var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
+
+            if (dataMember != null)
+            {
+                definition.Order = dataMember.Order;
+
+                if (!string.IsNullOrEmpty(dataMember.Name))
+                {
+                    definition.Name = dataMember.Name;
+                }
+            }
+
+            definition.GetValue = CreateGetter(definition);
+            definition.SetValue = CreateSetter(definition);
         }
 
         private static Type GetMemberType(Property property)
