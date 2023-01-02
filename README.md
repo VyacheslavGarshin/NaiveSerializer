@@ -5,7 +5,7 @@ NaiveSerializer
 
 Features:
 + Doesn't requere changing of serialized class or adding anything
-+ Resilient to differences in serialized/deserialized classes
++ Resilient to changes in serialized/deserialized classes
 + Deserialize unknown classes to dictionary
 + Respects `DataContract` attributes
 
