@@ -31,18 +31,14 @@ namespace Naive.Serializer
                 .Where(x => x.GetInterface(nameof(IHandler)) != null && !x.IsInterface && !x.IsAbstract))
             {
                 var handler = Activator.CreateInstance(handlerType) as IHandler;
-                
+                handler.SetType(null);
+
                 if (_handlers[(int)handler.HandlerType] != null)
                 {
                     throw new Exception($"Handler for {handler.HandlerType} already registered.");
                 }
 
                 _handlers[(int)handler.HandlerType] = handler;
-            }
-
-            foreach (var handler in _handlers.Where(x => x != null))
-            {
-                handler.SetType(null);
             }
         }
 
@@ -57,7 +53,7 @@ namespace Naive.Serializer
         {
             using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
-            Write(writer, obj, options ?? new(), null);
+            Write(writer, obj, options ?? new());
         }
 
         public static object Deserialize(byte[] bytes, NaiveSerializerOptions options = null)
@@ -124,21 +120,19 @@ namespace Naive.Serializer
                 {
                     if (handler != null && handler.Match(type))
                     {
-                        var typeHandler = (IHandler)Activator.CreateInstance(handler.GetType());
-                        typeHandler.SetType(type);
-                        _typeHandlers.TryAdd(type, typeHandler);
-                        result = typeHandler;
-                        break;
+                        result = (IHandler)Activator.CreateInstance(handler.GetType());
+                        result.SetType(type);
+                        _typeHandlers.TryAdd(type, result);
+                        return result;
                     }
                 }
             }
-
-            if (result == null)
+            else
             {
-                throw new NotSupportedException($"Handler for type {type.Name} is not found.");
+                return result;
             }
 
-            return result;
+            throw new NotSupportedException($"Handler for type {type.Name} is not found.");
         }
 
         internal static void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options, IHandler handler = null)
@@ -150,10 +144,7 @@ namespace Naive.Serializer
                 return;
             }
 
-            if (handler == null)
-            {
-                handler = GetTypeHandler(obj.GetType());
-            }
+            handler ??= GetTypeHandler(obj.GetType());
 
             writer.Write((byte)handler.HandlerType);
 
@@ -179,7 +170,7 @@ namespace Naive.Serializer
                 handler = type != null ? GetTypeHandler(type) : GetHandler(handlerType);
             }
 
-            if (handlerType != handler.HandlerType)
+            if (handler.HandlerType != handlerType)
             {
                 handler = GetHandler(handlerType);
             }

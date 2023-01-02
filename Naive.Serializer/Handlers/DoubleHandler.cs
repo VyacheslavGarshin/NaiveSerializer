@@ -1,10 +1,9 @@
-﻿using Naive.Serializer;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class DoubleHandler : AbstractHandler<DoubleHandler>
+    public class DoubleHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Double;
 

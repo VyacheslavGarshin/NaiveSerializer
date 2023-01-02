@@ -1,10 +1,9 @@
-﻿using Naive.Serializer;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class TimeSpanHandler : AbstractHandler<TimeSpanHandler>
+    public class TimeSpanHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.TimeSpan;
 

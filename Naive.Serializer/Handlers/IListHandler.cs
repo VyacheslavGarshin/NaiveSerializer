@@ -1,12 +1,11 @@
-﻿using Naive.Serializer;
-using System;
+﻿using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
 
 namespace Naive.Serializer.Handlers
 {
-    public class IListHandler : AbstractHandler<IListHandler>
+    public class IListHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.IList;
 
@@ -22,6 +21,8 @@ namespace Naive.Serializer.Handlers
         public override void SetType(Type type)
         {
             base.SetType(type);
+
+            IsNullable = true;
 
             if (Type == null)
             {
@@ -59,7 +60,7 @@ namespace Naive.Serializer.Handlers
 
             for (var i = 0; i < count; i++)
             {
-                var item = NaiveSerializer.Read(reader, _itemType, options, _itemHandler);
+                var item = NaiveSerializer.Read(reader, _itemType != typeof(object) ? _itemType : null, options, _itemHandler);
 
                 if (Type.IsArray)
                 {

@@ -179,22 +179,36 @@ namespace Naive.Serializer.UnitTests
         [TestCase(DateTimeKind.Utc)]
         public void TestEnum(DateTimeKind? value)
         {
-            ThereAndBack(value);
+            ThereAndBack(value, false);
+            ThereAndBack(value, true, true, (int?)value);
         }
 
         [TestCaseSource(nameof(TestIListCases))]
-        public void TestIList(object value)
+        public void TestIList(string name, object value)
         {
             ThereAndBack(value);
         }
 
         static object[] TestIListCases =
         {
-            new []{ new byte?[] { null, 1, 2 } },
-            new []{ new List<int?> { null, 1, 2 } },
-            new []{ new List<string> { null, "AAA", string.Empty } },
-            new []{ new string[] { null, "AAA", string.Empty } },
-            new []{ new object[] { null, 1, true, "AAA", 'c' } },
+            new object[]{ "byte[]", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "byte?[]", new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "list int?", new List<int?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "list string", new List<string> { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
+            new object[]{ "string[]", new string[] { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
+            new object[]{ "object[]", new object[] { null, 1, true, "AAA", 'c', 1L } },
+        };
+
+        [TestCaseSource(nameof(TestIDictionaryCases))]
+        public void TestIDictionary(string name, object value)
+        {
+            ThereAndBack(value);
+        }
+
+        static object[] TestIDictionaryCases =
+        {
+            new object[]{ "IDictionary[]", new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "A" } } },
+            new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { 2, null }, { 3, "A" } } },
         };
 
         [TestCaseSource(nameof(TestObjectWithoutContractCases))]
@@ -296,27 +310,36 @@ namespace Naive.Serializer.UnitTests
             public PlainObject[] PObjects { get; set; }
         }
 
-        private static object ThereAndBack(object value, bool check = true, bool notyped = true)
+        private static object ThereAndBack(object value, bool? notyped = true, bool check = true, object alrernativeValue = null)
         {
             object result = null;
 
             using var stream = new MemoryStream();
             NaiveSerializer.Serialize(value, stream);
 
-            Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+            Console.WriteLine($"Length: {stream.Length}");
+            Console.WriteLine(string.Join(",", stream.ToArray().Select(x => x.ToString())));
 
-            if (notyped)
+            if (notyped ?? true)
             {
                 stream.Position = 0;
                 result = NaiveSerializer.Deserialize(stream);
+
+                if (check)
+                {
+                    result.Should().BeEquivalentTo(alrernativeValue ?? value);
+                }
             }
 
-            stream.Position = 0;
-            result = NaiveSerializer.Deserialize(stream, value?.GetType());
-
-            if (check)
+            if (notyped != true)
             {
-                result.Should().BeEquivalentTo(value);
+                stream.Position = 0;
+                result = NaiveSerializer.Deserialize(stream, value?.GetType());
+
+                if (check)
+                {
+                    result.Should().BeEquivalentTo(alrernativeValue ?? value);
+                }
             }
 
             stream.Position.Should().Be(stream.Length);

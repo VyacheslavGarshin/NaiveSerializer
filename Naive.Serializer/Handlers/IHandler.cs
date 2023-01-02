@@ -7,6 +7,8 @@ namespace Naive.Serializer.Handlers
     {
         public Type Type { get; }
 
+        public bool IsNullable { get; }
+
         public HandlerType HandlerType { get; }
 
         public bool Match(Type type);

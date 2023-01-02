@@ -3,31 +3,28 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public abstract class AbstractHandler<T> : IHandler
-        where T : IHandler, new()
+    public abstract class AbstractHandler : IHandler
     {
-        public Type Type { get; set; }
+        public Type Type { get; protected set; }
 
-        public virtual HandlerType HandlerType => throw new NotImplementedException();
+        public abstract HandlerType HandlerType { get; }
 
-        public virtual bool Match(Type type)
-        {
-            throw new NotImplementedException();
-        }
+        public bool IsNullable { get; protected set; }
+
+        public abstract bool Match(Type type);
 
         public virtual void SetType(Type type)
         {
             Type = type;
+
+            if (Type != null)
+            {
+                IsNullable = Nullable.GetUnderlyingType(Type) != null;
+            }
         }
 
-        public virtual void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options);
 
-        public virtual object Read(BinaryReader reader, NaiveSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract object Read(BinaryReader reader, NaiveSerializerOptions options);
     }
 }

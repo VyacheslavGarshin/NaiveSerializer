@@ -6,11 +6,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Naive.Serializer.Handlers
 {
-    public class ObjectHandler : AbstractHandler<ObjectHandler>
+    public class ObjectHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Object;
 
@@ -26,6 +25,8 @@ namespace Naive.Serializer.Handlers
         public override void SetType(Type type)
         {
             base.SetType(type);
+
+            IsNullable = true;
 
             if (Type == null)
             {
@@ -59,8 +60,8 @@ namespace Naive.Serializer.Handlers
                         }
                     }
 
-                    definition.Getter = CreateGetterLambda(definition.Info);
-                    definition.Setter = CreateSetterLambda(definition.Info);
+                    definition.GetValue = CreateGetter(definition.Info);
+                    definition.SetValue = CreateSetter(definition.Info);
 
                     _properties.TryAdd(definition.Name, definition);
                 }
@@ -73,7 +74,7 @@ namespace Naive.Serializer.Handlers
         {
             foreach (var property in _sortedProperties)
             {
-                var value = property.Getter(obj);
+                var value = property.GetValue(obj);
 
                 if (value != null || !options.IgnoreNullValue)
                 {
@@ -111,13 +112,13 @@ namespace Naive.Serializer.Handlers
 
                     value = NaiveSerializer.Read(reader, property.Info.PropertyType, options, property.Handler);
 
-                    property.Setter(result, value);
+                    property.SetValue(result, value);
                 }
                 else
                 {
                     if (!isObject || options.IgnoreMissingMember)
                     {
-                        value = NaiveSerializer.Read(reader, null, options, null);
+                        value = NaiveSerializer.Read(reader, null, options);
 
                         if (!isObject)
                         {
@@ -134,17 +135,17 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private static Func<object, object> CreateGetterLambda(PropertyInfo property)
+        private static Func<object, object> CreateGetter(PropertyInfo property)
         {
-            var objParameterExpr = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = Expression.TypeAs(objParameterExpr, property.DeclaringType);
+            var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
+            var instanceExpr = Expression.TypeAs(objInstanceExpr, property.DeclaringType);
             var propertyExpr = Expression.Property(instanceExpr, property);
             var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
 
-            return Expression.Lambda<Func<object, object>>(propertyObjExpr, objParameterExpr).Compile();
+            return Expression.Lambda<Func<object, object>>(propertyObjExpr, objInstanceExpr).Compile();
         }
 
-        private static Action<object, object> CreateSetterLambda(PropertyInfo property)
+        private static Action<object, object> CreateSetter(PropertyInfo property)
         {
             var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
             var instanceExpr = Expression.TypeAs(objInstanceExpr, property.DeclaringType);
@@ -166,9 +167,9 @@ namespace Naive.Serializer.Handlers
 
             public IHandler Handler { get; set; }
             
-            public Func<object, object> Getter { get; set; }
+            public Func<object, object> GetValue { get; set; }
             
-            public Action<object, object> Setter { get; set; }
+            public Action<object, object> SetValue { get; set; }
 
             public override string ToString()
             {

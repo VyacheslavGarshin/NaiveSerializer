@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class BoolHandler : AbstractHandler<BoolHandler>
+    public class BoolHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Bool;
 

@@ -1,4 +1,7 @@
+using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.PlatformAbstractions.Interfaces;
 using Newtonsoft.Json;
+using NUnit.Framework.Interfaces;
 using Salar.Bois;
 using System.Diagnostics;
 using System.IO;
@@ -51,65 +54,73 @@ namespace Naive.Serializer.UnitTests
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Bois failed {ex.GetBaseException().Message}");
+                Console.WriteLine($"Bois failed serialize {ex.GetBaseException().Message}");
             }
             sw.Stop();
             Console.WriteLine($"Bois serialize time: {sw.Elapsed.TotalMilliseconds}, bytes: {bBytes?.Length}");
 
             sw.Restart();
+            object objD = null;
             for (var i = 0; i < count; i++)
             {
-                NaiveSerializer.Deserialize(bytes, obj?.GetType());
+                objD = NaiveSerializer.Deserialize(bytes, obj?.GetType());
             }
             sw.Stop();
+            objD.Should().BeEquivalentTo(obj);
             Console.WriteLine($"Naive deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             sw.Restart();
+            object jObjD = null;
             for (var i = 0; i < count; i++)
             {
-                JsonConvert.DeserializeObject(Encoding.UTF8.GetString(jBytes), obj?.GetType());
+                jObjD = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(jBytes), obj?.GetType());
             }
             sw.Stop();
+            jObjD.Should().BeEquivalentTo(obj);
             Console.WriteLine($"Json deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             sw.Restart();
+            object bObjD = null;
             try
             {
                 for (var i = 0; i < count; i++)
                 {
                     using var ms = new MemoryStream(bBytes);
-                    boisSerializer.Deserialize(ms, obj.GetType());
+                    bObjD = boisSerializer.Deserialize(ms, obj.GetType());
                 }
+                bObjD.Should().BeEquivalentTo(obj);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Bois failed {ex.GetBaseException().Message}");
+                Console.WriteLine($"Bois failed deserialize {ex.GetBaseException().Message}");
             }
             sw.Stop();
             Console.WriteLine($"Bois deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
-            Console.WriteLine("Naive bytes: " + Encoding.UTF8.GetString(bytes?.ToArray() ?? Array.Empty<byte>()));
+            Console.WriteLine("Naive bytes: " + string.Join(",", bytes.Select(x => x.ToString())));
             Console.WriteLine("Json bytes: " + Encoding.UTF8.GetString(jBytes?.ToArray() ?? Array.Empty<byte>()));
-            Console.WriteLine("Bois bytes: " + Encoding.UTF8.GetString(bBytes?.ToArray() ?? Array.Empty<byte>()));
+            Console.WriteLine("Bois bytes: " + string.Join(",", (bBytes ?? Array.Empty<byte>()).Select(x => x.ToString())));
         }
 
         static object[] TestPerformanceCases =
         {
-            new []{ 100000, "null", (object)null },
-            new []{ 100000, "1", (object)1 },
-            new []{ 100000, "string", (object)"small string" },
-            new []{ 100000, "datetime", (object)new DateTime(1000, 1, 1) },
-            new []{ 100000, "timespan", (object)TimeSpan.MinValue },
-            new []{ 100000, "guid", (object)Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}") },
-            new []{ 100000, "list string", (object)new List<string> { null, "AAA", "BBB", string.Empty } },
-            new []{ 100000, "array string", (object)new string[] { null, "AAA", "BBB", string.Empty } },
-            new []{ 100000, "array byte?", (object)new byte?[] { null, 1, 2, 3, 4, 5, 6 } },
-            new []{ 100000, "array byte", (object)new byte[] { 0, 1, 2, 3, 4, 5, 6 } },
-            new []{ 100000, "plain object", (object)new PlainObject {
+            new []{ 10000, "null", (object)null },
+            new []{ 10000, "1", (object)1 },
+            new []{ 10000, "string", (object)"**********" },
+            new []{ 10000, "datetime", (object)new DateTime(1000, 1, 1) },
+            new []{ 10000, "timespan", (object)TimeSpan.FromMinutes(1) },
+            new []{ 10000, "guid", (object)Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}") },
+            new []{ 10000, "list string", (object)new List<string> { "*", null, "*", "*", "*", "*", "*", "*", "*", "*" } },
+            new []{ 10000, "array string", (object)new string[] { "*", null, "*", "*", "*", "*", "*", "*", "*", "*" } },
+            new []{ 10000, "array byte?", (object)new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new []{ 10000, "array byte", (object)new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new []{ 10000, "array objects", (object)new object[] { 0, "*", true, 1L, new DateTime(1, 1, 1) } },
+            new []{ 10000, "dictionary", (object)new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "*" }, { 4, "*" }, { 5, "*" }, { 6, "*" }, { 7, "*" }, { 8, "*" }, { 9, "*" }, { 10, "*" } } },
+            new []{ 10000, "plain object", (object)new PlainObject {
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
-                Int = 10,
-                String = "Some small string",
-                Strings = new string[] { "1", "", null, "some small string a very good indeed" },
+                Int = 1,
+                String = "**********",
+                Strings = new string[] { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" },
                 PObject = new () { Int = 1 },
                 PObjects = new PlainObject[] { new (), new() { Guid = Guid.NewGuid() } } // null - bois fails
             } },

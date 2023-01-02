@@ -1,10 +1,9 @@
-﻿using Naive.Serializer;
-using System;
+﻿using System;
 using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class ByteHandler : AbstractHandler<ByteHandler>
+    public class ByteHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Byte;
 

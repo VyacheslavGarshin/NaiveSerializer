@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class DateTimeHandler : AbstractHandler<DateTimeHandler>
+    public class DateTimeHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.DateTime;
 

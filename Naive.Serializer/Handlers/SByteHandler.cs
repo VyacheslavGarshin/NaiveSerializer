@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class SByteHandler : AbstractHandler<SByteHandler>
+    public class SByteHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.SByte;
 
