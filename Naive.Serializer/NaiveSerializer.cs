@@ -102,6 +102,11 @@ namespace Naive.Serializer
 
         internal static IHandler GetHandler(HandlerType handlerType)
         {
+            if ((byte)handlerType > _handlers.Length)
+            {
+                throw new IndexOutOfRangeException($"Handler type {handlerType} is out of range.");
+            }
+
             var result = _handlers[(byte)handlerType];
 
             if (result == null)
