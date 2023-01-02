@@ -84,32 +84,6 @@ namespace Naive.Serializer.UnitTests
             sw.Stop();
             Console.WriteLine($"Naive deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
-
-            sw.Restart();
-            object objDRom = null;
-            try
-            {
-                for (var i = 0; i < count; i++)
-                {
-                    objDRom = NaiveSerializer.Deserialize(new ReadOnlyMemory<byte>(bytes), obj?.GetType());
-                }
-
-                try
-                {
-                    objDRom.Should().BeEquivalentTo(obj);
-                }
-                catch
-                {
-                    Console.WriteLine($"Naive Rom failed check");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Naive Rom failed deserialize {ex.GetBaseException().Message}");
-            }
-            sw.Stop();
-            Console.WriteLine($"Naive Rom deserialize time: {sw.Elapsed.TotalMilliseconds}");
-
             sw.Restart();
             object jObjD = null;
             try
@@ -159,6 +133,31 @@ namespace Naive.Serializer.UnitTests
             }
             sw.Stop();
             Console.WriteLine($"Bois deserialize time: {sw.Elapsed.TotalMilliseconds}");
+
+            sw.Restart();
+            object objDRom = null;
+            try
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    objDRom = NaiveSerializer.Deserialize(new ReadOnlyMemory<byte>(bytes), obj?.GetType());
+                }
+
+                try
+                {
+                    objDRom.Should().BeEquivalentTo(obj);
+                }
+                catch
+                {
+                    Console.WriteLine($"Naive Rom failed check");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Naive Rom failed deserialize {ex.GetBaseException().Message}");
+            }
+            sw.Stop();
+            Console.WriteLine($"Naive Rom deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             Console.WriteLine("Naive bytes: " + string.Join(",", bytes.Select(x => x.ToString())));
             Console.WriteLine("Json bytes: " + Encoding.UTF8.GetString(jBytes?.ToArray() ?? Array.Empty<byte>()));

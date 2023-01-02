@@ -292,7 +292,8 @@ namespace Naive.Serializer.UnitTests
                 Int = 5,
                 Ints = new int[] { 5, 1 },
                 PObject = new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
-                PObjects = new PlainObject[] { new (), null }
+                PObjects = new PlainObject[] { new (), null },
+                IntField = 10,
             }, true, null },
             new object[]{ "plain struct", new PlainStruct { Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 5,
@@ -323,6 +324,8 @@ namespace Naive.Serializer.UnitTests
             public PlainObject PObject { get; set; }
 
             public PlainObject[] PObjects { get; set; }
+
+            public int IntField;
         }
 
         public class PlainObjectLesser

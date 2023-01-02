@@ -46,17 +46,26 @@ namespace Naive.Serializer.Handlers
 
                 var dataContract = Type.GetCustomAttribute<DataContractAttribute>();
 
-                var definitions = Type.GetProperties()
-                    .Where(x => x.CanRead && x.CanWrite
-                        && x.GetCustomAttribute<IgnoreDataMemberAttribute>() == null
-                        && (dataContract == null || x.GetCustomAttribute<DataMemberAttribute>() != null))
-                    .Select(x => new Property { Info = x, Name = x.Name }).ToArray();
+                var definitionCandidates =
+                    Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
+                        .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
+                    Type.GetFields().Where(x => x.IsPublic)
+                        .Select(x => new Property { FieldInfo = x, Name = x.Name }))
+                    .ToArray();
 
-                foreach (var definition in definitions)
+                var definitions = new List<Property>();
+
+                foreach (var definition in definitionCandidates)
                 {
-                    var propertyInfo = definition.Info;
+                    var memberInfo = (MemberInfo)definition.PropertyInfo ?? definition.FieldInfo;
 
-                    var dataMember = propertyInfo.GetCustomAttribute<DataMemberAttribute>();
+                    if (memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null
+                        || (dataContract != null && memberInfo.GetCustomAttribute<DataMemberAttribute>() == null))
+                    {
+                        continue;
+                    }
+
+                    var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
 
                     if (dataMember != null)
                     {
@@ -68,10 +77,11 @@ namespace Naive.Serializer.Handlers
                         }
                     }
 
-                    definition.GetValue = CreateGetter(definition.Info);
-                    definition.SetValue = CreateSetter(definition.Info);
+                    definition.GetValue = CreateGetter(definition);
+                    definition.SetValue = CreateSetter(definition);
 
                     _properties.TryAdd(definition.Name, definition);
+                    definitions.Add(definition);
                 }
 
                 _sortedProperties = definitions.OrderBy(x => x.Order).ToArray();
@@ -90,7 +100,7 @@ namespace Naive.Serializer.Handlers
                 {
                     writer.Write(property.Name);
 
-                    property.Handler ??= NaiveSerializer.GetTypeHandler(property.Info.PropertyType);
+                    property.Handler ??= NaiveSerializer.GetTypeHandler(GetMemberType(property));
 
                     NaiveSerializer.Write(writer, value, options, property.Handler);
                 }
@@ -116,9 +126,9 @@ namespace Naive.Serializer.Handlers
 
                 if (_isObject && _properties.TryGetValue(name, out var property))
                 {
-                    property.Handler ??= NaiveSerializer.GetTypeHandler(property.Info.PropertyType);
+                    property.Handler ??= NaiveSerializer.GetTypeHandler(GetMemberType(property));
 
-                    value = NaiveSerializer.Read(reader, property.Info.PropertyType, options, property.Handler);
+                    value = NaiveSerializer.Read(reader, GetMemberType(property), options, property.Handler);
 
                     property.SetValue(result, value);
                 }
@@ -143,31 +153,50 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private static Func<object, object> CreateGetter(PropertyInfo property)
+        private static Type GetMemberType(Property property)
         {
+            return property.PropertyInfo?.PropertyType ?? property.FieldInfo.FieldType;
+        }
+
+        private static Func<object, object> CreateGetter(Property property)
+        {
+            var declaringType = GetDeclaringType(property);
+
             var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = property.DeclaringType.IsValueType 
-                ? Expression.Convert(objInstanceExpr, property.DeclaringType)
-                : Expression.TypeAs(objInstanceExpr, property.DeclaringType);
-            var propertyExpr = Expression.Property(instanceExpr, property);
+            var instanceExpr = declaringType.IsValueType
+                ? Expression.Convert(objInstanceExpr, declaringType)
+                : Expression.TypeAs(objInstanceExpr, declaringType);
+            var propertyExpr = property.PropertyInfo != null
+                ? Expression.Property(instanceExpr, property.PropertyInfo)
+                : Expression.Field(instanceExpr, property.FieldInfo);
             var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
 
             return Expression.Lambda<Func<object, object>>(propertyObjExpr, objInstanceExpr).Compile();
         }
 
-        private static Action<object, object> CreateSetter(PropertyInfo property)
+        private static Type GetDeclaringType(Property property)
         {
-            if (property.DeclaringType.IsValueType)
+            return property.PropertyInfo?.DeclaringType ?? property.FieldInfo.DeclaringType;
+        }
+
+        private static Action<object, object> CreateSetter(Property property)
+        {
+            var declaringType = GetDeclaringType(property);
+            var propertyType = GetMemberType(property);
+
+            if (declaringType.IsValueType)
             {
-                return property.SetValue;
+                return property.PropertyInfo != null ? property.PropertyInfo.SetValue : property.FieldInfo.SetValue;
             }
             else
             {
                 var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-                var instanceExpr = Expression.Convert(objInstanceExpr, property.DeclaringType);
-                var propertyExpr = Expression.Property(instanceExpr, property);
+                var instanceExpr = Expression.Convert(objInstanceExpr, declaringType);
+                var propertyExpr = property.PropertyInfo != null
+                    ? Expression.Property(instanceExpr, property.PropertyInfo)
+                    : Expression.Field(instanceExpr, property.FieldInfo);
                 var objValueExpr = Expression.Parameter(typeof(object), "value");
-                var valueExpr = Expression.Convert(objValueExpr, property.PropertyType);
+                var valueExpr = Expression.Convert(objValueExpr, propertyType);
                 var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
 
                 return Expression.Lambda<Action<object, object>>(propertyAssignExpr, objInstanceExpr, objValueExpr).Compile();
@@ -180,7 +209,9 @@ namespace Naive.Serializer.Handlers
 
             public int Order { get; set; }
 
-            public PropertyInfo Info { get; set; }
+            public PropertyInfo PropertyInfo { get; set; }
+
+            public FieldInfo FieldInfo { get; set; }
 
             public IHandler Handler { get; set; }
             
@@ -190,7 +221,7 @@ namespace Naive.Serializer.Handlers
 
             public override string ToString()
             {
-                return $"{Info.DeclaringType.Name}.{Info.Name}{(Name != Info.Name ? $"({Name})" : string.Empty)}";
+                return $"{PropertyInfo.DeclaringType.Name}.{PropertyInfo.Name}{(Name != PropertyInfo.Name ? $"({Name})" : string.Empty)}";
             }
         }
     }
