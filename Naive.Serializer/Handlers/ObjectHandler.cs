@@ -17,9 +17,11 @@ namespace Naive.Serializer.Handlers
 
         private Property[] _sortedProperties = new Property[0];
 
+        private bool _isObject;
+
         public override bool Match(Type type)
         {
-            return type.IsClass;
+            return true;
         }
 
         public override void SetType(Type type)
@@ -27,6 +29,7 @@ namespace Naive.Serializer.Handlers
             base.SetType(type);
 
             IsNullable = true;
+            IsSimple = false;
 
             if (Type == null)
             {
@@ -34,12 +37,17 @@ namespace Naive.Serializer.Handlers
             }
             else
             {
+                var nullableStruct = type.IsValueType ? Nullable.GetUnderlyingType(type) : null;
+
+                if (nullableStruct != null)
+                {
+                    Type = nullableStruct;
+                }
+
                 var dataContract = Type.GetCustomAttribute<DataContractAttribute>();
 
                 var definitions = Type.GetProperties()
-                    .Where(x =>
-                        x.CanRead
-                        && x.CanWrite
+                    .Where(x => x.CanRead && x.CanWrite
                         && x.GetCustomAttribute<IgnoreDataMemberAttribute>() == null
                         && (dataContract == null || x.GetCustomAttribute<DataMemberAttribute>() != null))
                     .Select(x => new Property { Info = x, Name = x.Name }).ToArray();
@@ -68,6 +76,8 @@ namespace Naive.Serializer.Handlers
 
                 _sortedProperties = definitions.OrderBy(x => x.Order).ToArray();
             }
+
+            _isObject = Type != typeof(object);
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -91,9 +101,7 @@ namespace Naive.Serializer.Handlers
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var isObject = Type != typeof(object);
-
-            var result = isObject ? Activator.CreateInstance(Type) : new Dictionary<string, object>();
+            var result = _isObject ? Activator.CreateInstance(Type) : new Dictionary<string, object>();
 
             do
             {
@@ -106,7 +114,7 @@ namespace Naive.Serializer.Handlers
 
                 object value;
 
-                if (isObject && _properties.TryGetValue(name, out var property))
+                if (_isObject && _properties.TryGetValue(name, out var property))
                 {
                     property.Handler ??= NaiveSerializer.GetTypeHandler(property.Info.PropertyType);
 
@@ -116,11 +124,11 @@ namespace Naive.Serializer.Handlers
                 }
                 else
                 {
-                    if (!isObject || options.IgnoreMissingMember)
+                    if (!_isObject || options.IgnoreMissingMember)
                     {
                         value = NaiveSerializer.Read(reader, null, options);
 
-                        if (!isObject)
+                        if (!_isObject)
                         {
                             ((Dictionary<string, object>)result).Add(name, value);
                         }
@@ -138,7 +146,9 @@ namespace Naive.Serializer.Handlers
         private static Func<object, object> CreateGetter(PropertyInfo property)
         {
             var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = Expression.TypeAs(objInstanceExpr, property.DeclaringType);
+            var instanceExpr = property.DeclaringType.IsValueType 
+                ? Expression.Convert(objInstanceExpr, property.DeclaringType)
+                : Expression.TypeAs(objInstanceExpr, property.DeclaringType);
             var propertyExpr = Expression.Property(instanceExpr, property);
             var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
 
@@ -147,14 +157,21 @@ namespace Naive.Serializer.Handlers
 
         private static Action<object, object> CreateSetter(PropertyInfo property)
         {
-            var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = Expression.TypeAs(objInstanceExpr, property.DeclaringType);
-            var propertyExpr = Expression.Property(instanceExpr, property);
-            var objValueExpr = Expression.Parameter(typeof(object), "value");
-            var valueExpr = Expression.Convert(objValueExpr, property.PropertyType);
-            var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
+            if (property.DeclaringType.IsValueType)
+            {
+                return property.SetValue;
+            }
+            else
+            {
+                var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
+                var instanceExpr = Expression.Convert(objInstanceExpr, property.DeclaringType);
+                var propertyExpr = Expression.Property(instanceExpr, property);
+                var objValueExpr = Expression.Parameter(typeof(object), "value");
+                var valueExpr = Expression.Convert(objValueExpr, property.PropertyType);
+                var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
 
-            return Expression.Lambda<Action<object, object>>(propertyAssignExpr, objInstanceExpr, objValueExpr).Compile();
+                return Expression.Lambda<Action<object, object>>(propertyAssignExpr, objInstanceExpr, objValueExpr).Compile();
+            }
         }
 
         private class Property

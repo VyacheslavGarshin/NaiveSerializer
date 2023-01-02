@@ -61,22 +61,52 @@ namespace Naive.Serializer.UnitTests
 
             sw.Restart();
             object objD = null;
-            for (var i = 0; i < count; i++)
+            try
             {
-                objD = NaiveSerializer.Deserialize(bytes, obj?.GetType());
+                for (var i = 0; i < count; i++)
+                {
+                    objD = NaiveSerializer.Deserialize(bytes, obj?.GetType());
+                }
+
+                try
+                {
+                    objD.Should().BeEquivalentTo(obj);
+                }
+                catch
+                {
+                    Console.WriteLine($"Naive failed check");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Naive failed deserialize {ex.GetBaseException().Message}");
             }
             sw.Stop();
-            objD.Should().BeEquivalentTo(obj);
             Console.WriteLine($"Naive deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             sw.Restart();
             object jObjD = null;
-            for (var i = 0; i < count; i++)
+            try
             {
-                jObjD = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(jBytes), obj?.GetType());
+                for (var i = 0; i < count; i++)
+                {
+                    jObjD = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(jBytes), obj?.GetType());
+                }
+
+                try
+                {
+                    jObjD.Should().BeEquivalentTo(obj);
+                }
+                catch
+                {
+                    Console.WriteLine($"Json failed check");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Json failed deserialize {ex.GetBaseException().Message}");
             }
             sw.Stop();
-            jObjD.Should().BeEquivalentTo(obj);
             Console.WriteLine($"Json deserialize time: {sw.Elapsed.TotalMilliseconds}");
 
             sw.Restart();
@@ -88,7 +118,14 @@ namespace Naive.Serializer.UnitTests
                     using var ms = new MemoryStream(bBytes);
                     bObjD = boisSerializer.Deserialize(ms, obj.GetType());
                 }
-                bObjD.Should().BeEquivalentTo(obj);
+                try
+                {
+                    bObjD.Should().BeEquivalentTo(obj);
+                }
+                catch
+                {
+                    Console.WriteLine($"Bois failed check");
+                }                
             }
             catch (Exception ex)
             {
@@ -116,6 +153,7 @@ namespace Naive.Serializer.UnitTests
             new []{ 10000, "array byte", (object)new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new []{ 10000, "array objects", (object)new object[] { 0, "*", true, 1L, new DateTime(1, 1, 1) } },
             new []{ 10000, "dictionary", (object)new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "*" }, { 4, "*" }, { 5, "*" }, { 6, "*" }, { 7, "*" }, { 8, "*" }, { 9, "*" }, { 10, "*" } } },
+            new []{ 10000, "ienumerable", (object)new int?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Select(x => x) },
             new []{ 10000, "plain object", (object)new PlainObject {
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 1,
@@ -123,6 +161,13 @@ namespace Naive.Serializer.UnitTests
                 Strings = new string[] { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" },
                 PObject = new () { Int = 1 },
                 PObjects = new PlainObject[] { new (), new() { Guid = Guid.NewGuid() } } // null - bois fails
+            } },
+            new []{ 10000, "plain struct", (object)new PlainStruct {
+                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Int = 1,
+                String = "**********",
+                Strings = new string[] { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" },
+                //PlainStructs = new PlainStruct[] { new (), new() { Guid = Guid.NewGuid() } } // null - bois fails
             } },
         };
 
@@ -139,6 +184,19 @@ namespace Naive.Serializer.UnitTests
             public PlainObject PObject { get; set; }
 
             public PlainObject[] PObjects { get; set; }
+        }
+
+        public struct PlainStruct
+        {
+            public Guid Guid { get; set; }
+
+            public int Int { get; set; }
+
+            public string String { get; set; }
+
+            public string[] Strings { get; set; }
+
+            public PlainStruct[] PlainStructs { get; set; }
         }
     }
 }

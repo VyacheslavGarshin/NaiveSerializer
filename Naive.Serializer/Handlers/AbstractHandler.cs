@@ -11,6 +11,8 @@ namespace Naive.Serializer.Handlers
 
         public bool IsNullable { get; protected set; }
 
+        public bool IsSimple { get; protected set; } = true;
+
         public abstract bool Match(Type type);
 
         public virtual void SetType(Type type)

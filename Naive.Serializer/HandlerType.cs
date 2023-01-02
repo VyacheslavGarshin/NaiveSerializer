@@ -1,5 +1,9 @@
-﻿namespace Naive.Serializer.Handlers
+﻿namespace Naive.Serializer
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>Maximum is <see cref="byte.MaxValue"/></remarks>
     public enum HandlerType
     {
         Null = 0,
@@ -24,10 +28,8 @@
         DateTimeOffset = 19,
         Guid = 20,
         Enum = 21,
-        IList = 22,
-        IDictionary = 23,
-        ICollection = 24,
-        IEnumerable = 25,
-        Object = 26,
+        IDictionary = 22,
+        IEnumerable = 23,
+        Object = 24,
     }
 }

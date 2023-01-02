@@ -186,7 +186,7 @@ namespace Naive.Serializer.UnitTests
         [TestCaseSource(nameof(TestIListCases))]
         public void TestIList(string name, object value)
         {
-            ThereAndBack(value);
+            var result = ThereAndBack(value);
         }
 
         static object[] TestIListCases =
@@ -197,6 +197,8 @@ namespace Naive.Serializer.UnitTests
             new object[]{ "list string", new List<string> { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new object[]{ "string[]", new string[] { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new object[]{ "object[]", new object[] { null, 1, true, "AAA", 'c', 1L } },
+            new object[]{ "hashset", new HashSet<int?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "ienumerable", new int?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Select(x => x) },
         };
 
         [TestCaseSource(nameof(TestIDictionaryCases))]
@@ -276,21 +278,27 @@ namespace Naive.Serializer.UnitTests
             public int Int { get; set; }
         }
 
-        [TestCaseSource(nameof(TestPlainObjectCases))]
-        public void TestPlainObject(PlainObject value)
+        [TestCaseSource(nameof(TestObjectCases))]
+        public void TestObject(string name, object value, bool check)
         {
-            var result = (PlainObject)ThereAndBack(value, false, true);
+            var result = ThereAndBack(value, true, false);
+            result = ThereAndBack(value, false, check);
         }
 
-        static object[] TestPlainObjectCases =
+        static object[] TestObjectCases =
          {
-            new []{ new PlainObject {
+            new object[]{ "plain object", new PlainObject {
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
                 Int = 5,
                 Ints = new int[] { 5, 1 },
-                PObject= new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
-                PObjects= new PlainObject[] { new (), null }
-            } },
+                PObject = new () { Int = 1 , Ints = new int[] { 2 }, Strings = new [] { "A" } },
+                PObjects = new PlainObject[] { new (), null }
+            }, true },
+            new object[]{ "plain struct", new PlainStruct { Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
+                Int = 5,
+                Ints = new int[] { 5, 1 },
+                PStructs = new PlainStruct?[] { new() { String = "*" }, null }
+            }, false },
         };
 
         public class PlainObject
@@ -310,7 +318,22 @@ namespace Naive.Serializer.UnitTests
             public PlainObject[] PObjects { get; set; }
         }
 
-        private static object ThereAndBack(object value, bool? notyped = true, bool check = true, object alrernativeValue = null)
+        public struct PlainStruct
+        {
+            public Guid Guid { get; set; }
+
+            public int Int { get; set; }
+
+            public string String { get; set; }
+
+            public int[] Ints { get; set; }
+
+            public string[] Strings { get; set; }
+
+            public PlainStruct?[] PStructs { get; set; }
+        }
+
+        private static object ThereAndBack(object value, bool? notyped = null, bool check = true, object alrernativeValue = null)
         {
             object result = null;
 

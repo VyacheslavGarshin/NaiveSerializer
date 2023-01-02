@@ -7,9 +7,23 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.Enum;
 
+        private Type _enumType;
+
         public override bool Match(Type type)
         {
             return type.IsEnum || (Nullable.GetUnderlyingType(type)?.IsEnum ?? false);
+        }
+
+        public override void SetType(Type type)
+        {
+            base.SetType(type);
+
+            IsSimple = false;
+
+            if (Type != null)
+            {
+                _enumType = Nullable.GetUnderlyingType(Type) ?? Type;
+            }
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -21,19 +35,12 @@ namespace Naive.Serializer.Handlers
         {
             var value = reader.ReadInt32();
 
-            if (Type == null)
+            if (_enumType == null)
             {
                 return value;
             }
 
-            var enumType = Nullable.GetUnderlyingType(Type) ?? Type;
-
-            if (enumType == null || !enumType.IsEnum)
-            {
-                return value;
-            }
-
-            return Enum.ToObject(enumType, value);
+            return Enum.ToObject(_enumType, value);
         }
     }
 }

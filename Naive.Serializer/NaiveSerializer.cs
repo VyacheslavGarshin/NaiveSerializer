@@ -167,7 +167,12 @@ namespace Naive.Serializer
 
             if (handler == null)
             {
-                handler = type != null ? GetTypeHandler(type) : GetHandler(handlerType);
+                handler = GetHandler(handlerType);
+
+                if (!handler.IsSimple && type != null)
+                {
+                    handler = GetTypeHandler(type);
+                }
             }
 
             if (handler.HandlerType != handlerType)

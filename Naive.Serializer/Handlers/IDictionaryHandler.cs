@@ -28,6 +28,7 @@ namespace Naive.Serializer.Handlers
             base.SetType(type);
 
             IsNullable = true;
+            IsSimple = false;
 
             if (Type == null)
             {
