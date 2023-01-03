@@ -86,16 +86,15 @@ namespace Naive.Serializer.Handlers
 
                 if (value != null || !options.IgnoreNullValue)
                 {
-                    writer.Write((byte)property.NameBytes.Length);
-                    writer.Write(property.NameBytes);
+                    writer.Write(property.Name);
 
-                    property.Handler ??= NaiveSerializer.GetTypeHandler(GetMemberType(property));
+                    property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
 
                     NaiveSerializer.Write(writer, value, options, property.Handler);
                 }
             }
 
-            writer.Write((byte)0);
+            writer.Write(string.Empty);
         }
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
@@ -104,22 +103,20 @@ namespace Naive.Serializer.Handlers
 
             do
             {
-                var nameLength = reader.ReadByte();
+                var name = reader.ReadString();
 
-                if (nameLength == 0)
+                if (string.IsNullOrEmpty(name))
                 {
                     break;
                 }
-
-                var name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
 
                 object value;
 
                 if (_isObject && _properties.TryGetValue(name, out var property))
                 {
-                    property.Handler ??= NaiveSerializer.GetTypeHandler(GetMemberType(property));
+                    property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
 
-                    value = NaiveSerializer.Read(reader, GetMemberType(property), options, property.Handler);
+                    value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
 
                     property.SetValue(result, value);
                 }
@@ -168,14 +165,9 @@ namespace Naive.Serializer.Handlers
                 }
             }
 
+            definition.MemberType = definition.PropertyInfo?.PropertyType ?? definition.FieldInfo.FieldType;
             definition.GetValue = CreateGetter(definition);
             definition.SetValue = CreateSetter(definition);
-            definition.NameBytes = Encoding.UTF8.GetBytes(definition.Name);
-        }
-
-        private static Type GetMemberType(Property property)
-        {
-            return property.PropertyInfo?.PropertyType ?? property.FieldInfo.FieldType;
         }
 
         private static Type GetDeclaringType(Property property)
@@ -194,7 +186,7 @@ namespace Naive.Serializer.Handlers
             var propertyExpr = property.PropertyInfo != null
                 ? Expression.Property(instanceExpr, property.PropertyInfo)
                 : Expression.Field(instanceExpr, property.FieldInfo);
-            var propertyObjExpr = GetMemberType(property).IsValueType 
+            var propertyObjExpr = property.MemberType.IsValueType 
                 ? Expression.Convert(propertyExpr, typeof(object))
                 : Expression.TypeAs(propertyExpr, typeof(object));
 
@@ -204,7 +196,7 @@ namespace Naive.Serializer.Handlers
         private static Action<object, object> CreateSetter(Property property)
         {
             var declaringType = GetDeclaringType(property);
-            var propertyType = GetMemberType(property);
+            var propertyType = property.MemberType;
 
             if (declaringType.IsValueType)
             {
@@ -218,7 +210,7 @@ namespace Naive.Serializer.Handlers
                     ? Expression.Property(instanceExpr, property.PropertyInfo)
                     : Expression.Field(instanceExpr, property.FieldInfo);
                 var objValueExpr = Expression.Parameter(typeof(object), "value");
-                var valueExpr = GetMemberType(property).IsValueType 
+                var valueExpr = property.MemberType.IsValueType 
                     ? Expression.Convert(objValueExpr, propertyType)
                     : Expression.TypeAs(objValueExpr, propertyType);
                 var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
@@ -231,20 +223,20 @@ namespace Naive.Serializer.Handlers
         {
             public string Name { get; set; }
 
-            public byte[] NameBytes { get; set; }
-
             public int Order { get; set; }
 
             public PropertyInfo PropertyInfo { get; set; }
 
             public FieldInfo FieldInfo { get; set; }
 
+            public Type MemberType { get; set; }
+
             public IHandler Handler { get; set; }
             
             public Func<object, object> GetValue { get; set; }
             
             public Action<object, object> SetValue { get; set; }
-
+            
             public override string ToString()
             {
                 return $"{PropertyInfo.DeclaringType.Name}.{PropertyInfo.Name}{(Name != PropertyInfo.Name ? $"({Name})" : string.Empty)}";
