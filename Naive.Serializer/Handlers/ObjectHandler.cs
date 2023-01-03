@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Naive.Serializer.Handlers
 {
@@ -85,7 +86,8 @@ namespace Naive.Serializer.Handlers
 
                 if (value != null || !options.IgnoreNullValue)
                 {
-                    writer.Write(property.Name);
+                    writer.Write((byte)property.NameBytes.Length);
+                    writer.Write(property.NameBytes);
 
                     property.Handler ??= NaiveSerializer.GetTypeHandler(GetMemberType(property));
 
@@ -93,7 +95,7 @@ namespace Naive.Serializer.Handlers
                 }
             }
 
-            writer.Write(string.Empty);
+            writer.Write((byte)0);
         }
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
@@ -102,12 +104,14 @@ namespace Naive.Serializer.Handlers
 
             do
             {
-                var name = reader.ReadString();
+                var nameLength = reader.ReadByte();
 
-                if (string.IsNullOrEmpty(name))
+                if (nameLength == 0)
                 {
                     break;
                 }
+
+                var name = Encoding.UTF8.GetString(reader.ReadBytes(nameLength));
 
                 object value;
 
@@ -166,6 +170,7 @@ namespace Naive.Serializer.Handlers
 
             definition.GetValue = CreateGetter(definition);
             definition.SetValue = CreateSetter(definition);
+            definition.NameBytes = Encoding.UTF8.GetBytes(definition.Name);
         }
 
         private static Type GetMemberType(Property property)
@@ -225,6 +230,8 @@ namespace Naive.Serializer.Handlers
         private class Property
         {
             public string Name { get; set; }
+
+            public byte[] NameBytes { get; set; }
 
             public int Order { get; set; }
 
