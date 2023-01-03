@@ -37,7 +37,3 @@ Performance
 ===========
 
 Couple of times better than NewtonJson, a bit slower than [Bois](https://github.com/salarcode/Bois).
-
-[Benchmark report](https://github.com/VyacheslavGarshin/NaiveSerializer/blob/main/SmallBenchmark-report.html) for small data.
-
-[Benchmark report](https://github.com/VyacheslavGarshin/NaiveSerializer/blob/main/BigBenchmark-report.html) for big data.
