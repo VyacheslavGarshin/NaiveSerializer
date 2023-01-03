@@ -28,8 +28,10 @@
         DateTimeOffset = 19,
         Guid = 20,
         Enum = 21,
-        IDictionary = 22,
-        IEnumerable = 23,
-        Object = 24,
+        Bytes = 22,
+        Chars = 23,
+        IDictionary = 24,
+        IEnumerable = 25,
+        Object = 26,
     }
 }

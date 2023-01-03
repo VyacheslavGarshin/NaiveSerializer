@@ -37,11 +37,18 @@ namespace Naive.Serializer.Handlers
             }
             else
             {
-                var nullableStruct = type.IsValueType ? Nullable.GetUnderlyingType(type) : null;
-
-                if (nullableStruct != null)
+                if (type.IsValueType)
                 {
-                    Type = nullableStruct;
+                    var nullableStruct = Nullable.GetUnderlyingType(type);
+
+                    if (nullableStruct != null)
+                    {
+                        Type = nullableStruct;
+                    }
+                    else
+                    {
+                        IsNullable = false;
+                    }
                 }
 
                 var dataContract = Type.GetCustomAttribute<DataContractAttribute>();

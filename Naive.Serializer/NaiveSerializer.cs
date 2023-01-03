@@ -166,10 +166,9 @@ namespace Naive.Serializer
 
         internal static void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options, IHandler handler = null)
         {
-            _handlers[(int)HandlerType.Null].Write(writer, obj, options);
-
             if (obj == null)
             {
+                writer.Write((byte)HandlerType.Null);
                 return;
             }
 
@@ -182,16 +181,11 @@ namespace Naive.Serializer
 
         internal static object Read(BinaryReader reader, Type type, NaiveSerializerOptions options, IHandler handler = null)
         {
-            if ((byte)_handlers[(int)HandlerType.Null].Read(reader, options) == 0)
-            {
-                return null;
-            };
-
             var handlerType = (HandlerType)reader.ReadByte();
 
-            if ((int)handlerType > _handlers.Length - 1)
+            if (handlerType == HandlerType.Null)
             {
-                throw new IndexOutOfRangeException($"Handler type {handlerType} is out of range.");
+                return null;
             }
 
             if (handler == null)

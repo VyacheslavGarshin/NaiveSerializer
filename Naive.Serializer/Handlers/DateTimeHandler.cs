@@ -19,7 +19,7 @@ namespace Naive.Serializer.Handlers
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            return new DateTime(reader.ReadInt64());
+            return DateTime.FromBinary(reader.ReadInt64());
         }
     }
 }

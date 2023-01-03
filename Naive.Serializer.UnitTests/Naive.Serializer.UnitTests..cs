@@ -1,6 +1,6 @@
 using FluentAssertions;
+using System.Globalization;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Naive.Serializer.UnitTests
 {
@@ -183,15 +183,39 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value, true, true, (int?)value);
         }
 
-        [TestCaseSource(nameof(TestIListCases))]
-        public void TestIList(string name, object value)
+        [TestCaseSource(nameof(TestBytesCases))]
+        public void TestBytes(string name, object value, bool check)
+        {
+            var result = ThereAndBack(value, true, check);
+        }
+
+        static object[] TestBytesCases =
+        {
+            new object[]{ "null", null, true },
+            new object[]{ "byte[]", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, true },
+            new object[]{ "read only memory", new ReadOnlyMemory<byte>(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), false },
+        };
+
+        [TestCaseSource(nameof(TestCharsCases))]
+        public void TestChars(string name, object value)
         {
             var result = ThereAndBack(value);
         }
 
-        static object[] TestIListCases =
+        static object[] TestCharsCases =
         {
-            new object[]{ "byte[]", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "null", null },
+            new object[]{ "char[]", new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' } },
+        };
+
+        [TestCaseSource(nameof(TestIEnumerableCases))]
+        public void TestIEnumerable(string name, object value)
+        {
+            var result = ThereAndBack(value);
+        }
+
+        static object[] TestIEnumerableCases =
+        {
             new object[]{ "byte?[]", new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new object[]{ "list int?", new List<int?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new object[]{ "list string", new List<string> { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
