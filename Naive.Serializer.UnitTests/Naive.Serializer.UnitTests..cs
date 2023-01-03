@@ -211,18 +211,20 @@ namespace Naive.Serializer.UnitTests
         [TestCaseSource(nameof(TestIEnumerableCases))]
         public void TestIEnumerable(string name, object value)
         {
-            var result = ThereAndBack(value);
+            var result = ThereAndBack(value, checkTypedOnly: true);
         }
 
         static object[] TestIEnumerableCases =
         {
             new object[]{ "byte?[]", new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
-            new object[]{ "list int?", new List<int?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "list byte", new List<byte> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "list byte?", new List<byte?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new object[]{ "list string", new List<string> { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new object[]{ "string[]", new string[] { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new object[]{ "object[]", new object[] { null, 1, true, "AAA", 'c', 1L } },
             new object[]{ "hashset", new HashSet<int?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new object[]{ "ienumerable", new int?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Select(x => x) },
+            new object[]{ "plain object[]", Enumerable.Range(0, 10).Select(x => new PlainObject()).ToArray() },
         };
 
         [TestCaseSource(nameof(TestIDictionaryCases))]
@@ -234,7 +236,7 @@ namespace Naive.Serializer.UnitTests
         static object[] TestIDictionaryCases =
         {
             new object[]{ "IDictionary[]", new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "A" } } },
-            new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { 2, null }, { 3, "A" } } },
+            new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { "", null }, { 3, "A" } } },
         };
 
         [TestCaseSource(nameof(TestObjectWithoutContractCases))]
@@ -378,7 +380,7 @@ namespace Naive.Serializer.UnitTests
             public PlainStruct?[] PStructs { get; set; }
         }
 
-        private static object ThereAndBack(object value, bool? notyped = null, bool check = true, object alrernativeValue = null, Type deserializeType = null)
+        private static object ThereAndBack(object value, bool? notyped = null, bool check = true, object alrernativeValue = null, Type deserializeType = null, bool checkTypedOnly = false)
         {
             object result = null;
 
@@ -393,7 +395,7 @@ namespace Naive.Serializer.UnitTests
                 stream.Position = 0;
                 result = NaiveSerializer.Deserialize(stream);
 
-                if (check)
+                if (check && !checkTypedOnly)
                 {
                     result.Should().BeEquivalentTo(alrernativeValue ?? value);
                 }

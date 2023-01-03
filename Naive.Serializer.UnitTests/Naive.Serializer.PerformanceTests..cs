@@ -184,32 +184,20 @@ namespace Naive.Serializer.UnitTests
             new []{ 10000, "array objects", (object)new object[] { 0, "*", true, 1L, new DateTime(1, 1, 1) } },
             new []{ 10000, "dictionary", (object)new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "*" }, { 4, "*" }, { 5, "*" }, { 6, "*" }, { 7, "*" }, { 8, "*" }, { 9, "*" }, { 10, "*" } } },
             new []{ 10000, "ienumerable", (object)new int?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Select(x => x) },
-            new []{ 10000, "plain object", (object)new PlainObject {
-                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
-                Int = 1,
-                String = "**********",
-                Strings = new string[] { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" },
-                PObject = new () { Int = 1 },
-                PObjects = new PlainObject[] { new (), new() { Guid = Guid.NewGuid() } } // null - bois fails
-            } },
-            new []{ 10000, "plain struct", (object)new PlainStruct {
-                Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
-                Int = 1,
-                String = "**********",
-                Strings = new string[] { "*", "*", "*", "*", "*", "*", "*", "*", "*", "*" },
-                //PlainStructs = new PlainStruct[] { new (), new() { Guid = Guid.NewGuid() } } // null - bois fails
-            } },
+            new []{ 10000, "plain object", (object)new PlainObject { PObject = new(), PObjects = new PlainObject []{ new() } } },
+            new []{ 10000, "plain struct", (object)new PlainStruct { PlainStructs = new PlainStruct[] { new() } }, }, 
+            new []{ 10000, "plain object[]", (object)Enumerable.Range(0, 10).Select(x => new PlainObject()).ToArray() }
         };
 
         public class PlainObject
         {
-            public Guid Guid { get; set; }
+            public Guid Guid { get; set; } = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}");
 
-            public int Int { get; set; }
+            public int Int { get; set; } = 1;
 
-            public string String { get; set; }
+            public string String { get; set; } = "String";
 
-            public string[] Strings { get; set; }
+            public string[] Strings { get; set; } = Enumerable.Range(0, 10).Select(x => "*").ToArray();
 
             public PlainObject PObject { get; set; }
 
@@ -218,15 +206,19 @@ namespace Naive.Serializer.UnitTests
 
         public struct PlainStruct
         {
-            public Guid Guid { get; set; }
+            public Guid Guid { get; set; } = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}");
 
-            public int Int { get; set; }
+            public int Int { get; set; } = 1;
 
-            public string String { get; set; }
+            public string String { get; set; } = "String";
 
-            public string[] Strings { get; set; }
+            public string[] Strings { get; set; } = Enumerable.Range(0, 10).Select(x => "*").ToArray();
 
             public PlainStruct[] PlainStructs { get; set; }
+
+            public PlainStruct()
+            {
+            }
         }
     }
 }

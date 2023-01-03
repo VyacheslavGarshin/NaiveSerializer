@@ -28,18 +28,9 @@ namespace Naive.Serializer.Handlers
                     _isReadOnlyMemory = true;
                 }
 
-                if (type.IsValueType)
+                if (type.IsValueType && Nullable.GetUnderlyingType(type) == null)
                 {
-                    var nullableStruct = Nullable.GetUnderlyingType(type);
-
-                    if (nullableStruct != null)
-                    {
-                        Type = nullableStruct;
-                    }
-                    else
-                    {
-                        IsNullable = false;
-                    }
+                    IsNullable = false;
                 }
             }
         }

@@ -47,6 +47,11 @@ namespace Naive.Serializer.Handlers
                 {
                     _itemHandler = NaiveSerializer.GetTypeHandler(_itemType);             
                 }
+
+                if (_itemType.IsValueType && Nullable.GetUnderlyingType(_itemType) == null)
+                {
+                    IsNullable = false;
+                }
             }
 
             _createArray = Type.IsArray || Type.IsInterface || Type.ReflectedType == typeof(Enumerable);
@@ -79,53 +84,95 @@ namespace Naive.Serializer.Handlers
             else
             {
                 throw new NotSupportedException($"Type '{Type.Name}' is not supported in lists.");
-            }            
+            }
 
+            writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
             writer.Write(count);
 
             foreach (var item in obj as IEnumerable)
             {
-                NaiveSerializer.Write(writer, item, options, _itemHandler);
+                if (IsNullable)
+                {
+                    NaiveSerializer.Write(writer, item, options, _itemHandler);
+                }
+                else
+                {
+                    _itemHandler.Write(writer, item, options);
+                }
             }
         }
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
-        {           
+        {
+            var handlerType = (HandlerType)reader.ReadByte();
             var count = reader.ReadInt32();
-            
+
+            var isNullable = handlerType == HandlerType.Null;
+            var itemHandler = !isNullable && (_itemHandler == null || _itemHandler.HandlerType != handlerType)
+                ? NaiveSerializer.GetHandler(handlerType)
+                : _itemHandler;
+
             var result = _createArray ? Array.CreateInstance(_itemType, count) : Activator.CreateInstance(Type);
 
-            MethodInfo addMethod = null;
-
-            if (!_createArray && !_isList)
-            {
-                addMethod = result.GetType().GetMethod("Add");
-
-                if (addMethod == null)
-                {
-                    throw new NotSupportedException($"Cannot find Add method on type {result.GetType().Name}.");
-                }
-            }
+            var addMethod = GetAddMethod(result);
 
             for (var i = 0; i < count; i++)
             {
-                var item = NaiveSerializer.Read(reader, _itemType != typeof(object) ? _itemType : null, options, _itemHandler);
+                var item = ReadItem(reader, options, isNullable, itemHandler);
 
-                if (_createArray)
+                AddItem(result, addMethod, i, item);
+            }
+
+            return result;
+        }
+
+        private MethodInfo GetAddMethod(object collection)
+        {
+            MethodInfo result = null;
+
+            if (!_createArray && !_isList)
+            {
+                result = collection.GetType().GetMethod("Add");
+
+                if (result == null)
                 {
-                    ((IList)result)[i] = item;
-                }
-                else if (_isList)
-                {
-                    ((IList)result).Add(item);
-                }
-                else
-                {
-                    addMethod.Invoke(result, new object[] { item });
+                    throw new NotSupportedException($"Cannot find Add method on type {collection.GetType().Name}.");
                 }
             }
 
             return result;
+        }
+
+        private object ReadItem(BinaryReader reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
+        {
+            object result;
+
+            if (isNullable)
+            {
+                result = NaiveSerializer.Read(reader, _itemType != typeof(object) ? _itemType : null, options, itemHandler);
+            }
+            else
+            {
+                result = itemHandler.Read(reader, options);
+            }
+
+            return result;
+        }
+
+        private void AddItem(object result, MethodInfo addMethod, int i, object item)
+        {
+            if (_createArray)
+            {
+                ((IList)result)[i] = item;
+            }
+            else if (_isList)
+            {
+                ((IList)result).Add(item);
+            }
+            else
+            {
+                addMethod.Invoke(result, new object[] { item });
+            }
         }
     }
 }

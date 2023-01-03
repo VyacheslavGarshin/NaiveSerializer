@@ -189,7 +189,9 @@ namespace Naive.Serializer.Handlers
             var propertyExpr = property.PropertyInfo != null
                 ? Expression.Property(instanceExpr, property.PropertyInfo)
                 : Expression.Field(instanceExpr, property.FieldInfo);
-            var propertyObjExpr = Expression.Convert(propertyExpr, typeof(object));
+            var propertyObjExpr = GetMemberType(property).IsValueType 
+                ? Expression.Convert(propertyExpr, typeof(object))
+                : Expression.TypeAs(propertyExpr, typeof(object));
 
             return Expression.Lambda<Func<object, object>>(propertyObjExpr, objInstanceExpr).Compile();
         }
@@ -211,7 +213,9 @@ namespace Naive.Serializer.Handlers
                     ? Expression.Property(instanceExpr, property.PropertyInfo)
                     : Expression.Field(instanceExpr, property.FieldInfo);
                 var objValueExpr = Expression.Parameter(typeof(object), "value");
-                var valueExpr = Expression.Convert(objValueExpr, propertyType);
+                var valueExpr = GetMemberType(property).IsValueType 
+                    ? Expression.Convert(objValueExpr, propertyType)
+                    : Expression.TypeAs(objValueExpr, propertyType);
                 var propertyAssignExpr = Expression.Assign(propertyExpr, valueExpr);
 
                 return Expression.Lambda<Action<object, object>>(propertyAssignExpr, objInstanceExpr, objValueExpr).Compile();

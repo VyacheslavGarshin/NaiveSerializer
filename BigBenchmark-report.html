@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>BigBenchmark-20230103-221401</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.13.3, OS=Windows 10 (10.0.19044.2364/21H2/November2021Update)
+Intel Core i5-9400F CPU 2.90GHz (Coffee Lake), 1 CPU, 6 logical and 6 physical cores
+.NET SDK=7.0.100
+  [Host]     : .NET 6.0.11 (6.0.1122.52304), X64 RyuJIT AVX2
+  Job-LMOQBJ : .NET 6.0.11 (6.0.1122.52304), X64 RyuJIT AVX2
+</code></pre>
+<pre><code>InvocationCount=10  LaunchCount=3  RunStrategy=Throughput  
+UnrollFactor=1  WarmupCount=1  
+</code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>method</th><th>         name</th><th>      value</th><th>          type</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th>
+</tr>
+</thead><tbody><tr><td>Json</td><td>Deserialize</td><td>PlainClass[](10000)</td><td>Byte[1248940]</td><td>Bench(...)ass[] [22]</td><td>21.114 ms</td><td>0.2056 ms</td><td>0.4058 ms</td><td>21.103 ms</td>
+</tr><tr><td>Bois</td><td>Deserialize</td><td>PlainClass[](10000)</td><td>Byte[400003]</td><td>Bench(...)ass[] [22]</td><td>3.934 ms</td><td>0.0457 ms</td><td>0.2264 ms</td><td>3.893 ms</td>
+</tr><tr><td>MsgPack</td><td>Deserialize</td><td>PlainClass[](10000)</td><td>Byte[760003]</td><td>Bench(...)ass[] [22]</td><td>5.418 ms</td><td>0.0548 ms</td><td>0.1482 ms</td><td>5.435 ms</td>
+</tr><tr><td>Naive</td><td>Deserialize</td><td>PlainClass[](10000)</td><td>Byte[850006]</td><td>Bench(...)ass[] [22]</td><td>11.523 ms</td><td>0.1222 ms</td><td>0.2682 ms</td><td>11.494 ms</td>
+</tr><tr><td>Naive</td><td>Serialize</td><td>PlainClass[](10000)</td><td>PlainClass[10000]</td><td>?</td><td>4.241 ms</td><td>0.0203 ms</td><td>0.0427 ms</td><td>4.239 ms</td>
+</tr><tr><td>Json</td><td>Serialize</td><td>PlainClass[](10000)</td><td>PlainClass[10000]</td><td>?</td><td>9.641 ms</td><td>0.0763 ms</td><td>0.1337 ms</td><td>9.634 ms</td>
+</tr><tr><td>Bois</td><td>Serialize</td><td>PlainClass[](10000)</td><td>PlainClass[10000]</td><td>?</td><td>2.567 ms</td><td>0.0201 ms</td><td>0.0469 ms</td><td>2.555 ms</td>
+</tr><tr><td>MsgPack</td><td>Serialize</td><td>PlainClass[](10000)</td><td>PlainClass[10000]</td><td>?</td><td>2.058 ms</td><td>0.0119 ms</td><td>0.0203 ms</td><td>2.052 ms</td>
+</tr></tbody></table>
+</body>
+</html>

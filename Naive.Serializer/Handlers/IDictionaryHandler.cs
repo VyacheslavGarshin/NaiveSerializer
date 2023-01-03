@@ -17,6 +17,8 @@ namespace Naive.Serializer.Handlers
         private IHandler _keyHandler;
 
         private IHandler _itemHandler;
+        
+        private bool _isKeyNullable;
 
         public override bool Match(Type type)
         {
@@ -27,6 +29,7 @@ namespace Naive.Serializer.Handlers
         {
             base.SetType(type);
 
+            _isKeyNullable = true;
             IsNullable = true;
             IsSimple = false;
 
@@ -50,25 +53,64 @@ namespace Naive.Serializer.Handlers
                 {
                     _itemHandler = NaiveSerializer.GetTypeHandler(_itemType);             
                 }
+
+                if (_keyType.IsValueType && Nullable.GetUnderlyingType(_keyType) == null)
+                {
+                    _isKeyNullable = false;
+                }
+
+                if (_itemType.IsValueType && Nullable.GetUnderlyingType(_itemType) == null)
+                {
+                    IsNullable = false;
+                }
             }
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
+            writer.Write((byte)(_isKeyNullable ? HandlerType.Null : _keyHandler.HandlerType));
+            writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
             var list = (IDictionary)obj;
 
             writer.Write(list.Count);
 
             foreach (DictionaryEntry item in list)
             {
-                NaiveSerializer.Write(writer, item.Key, options, _keyHandler);
-                NaiveSerializer.Write(writer, item.Value, options, _itemHandler);
+                if (_isKeyNullable)
+                {
+                    NaiveSerializer.Write(writer, item.Key, options, _keyHandler);
+                }
+                else
+                {
+                    _keyHandler.Write(writer, item.Key, options);
+                }
+
+                if (IsNullable)
+                {
+                    NaiveSerializer.Write(writer, item.Value, options, _itemHandler);
+                }
+                else
+                {
+                    _itemHandler.Write(writer, item.Value, options);
+                }
             }
         }
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
-        {           
+        {
+            var keyHandlerType = (HandlerType)reader.ReadByte();
+            var handlerType = (HandlerType)reader.ReadByte();
             var count = reader.ReadInt32();
+
+            var isKeyNullable = keyHandlerType == HandlerType.Null;
+            var keyHandler = !isKeyNullable && (_keyHandler == null || _keyHandler.HandlerType != keyHandlerType)
+                ? NaiveSerializer.GetHandler(keyHandlerType)
+                : _keyHandler;
+
+            var isNullable = handlerType == HandlerType.Null;
+            var itemHandler = !isNullable && (_itemHandler == null || _itemHandler.HandlerType != handlerType)
+                ? NaiveSerializer.GetHandler(handlerType)
+                : _itemHandler;
 
             var result = (IDictionary)Activator.CreateInstance(Type);
 
@@ -76,10 +118,42 @@ namespace Naive.Serializer.Handlers
 
             for (var i = 0; i < count; i++)
             {
-                var key = NaiveSerializer.Read(reader, _keyType, options, _keyHandler);
-                var value = NaiveSerializer.Read(reader, _itemType, options, _itemHandler);
+                var key = ReadKey(reader, options, isKeyNullable, keyHandler);
+                var value = ReadValue(reader, options, isNullable, itemHandler);
 
                 addMethod.Invoke(result, new[] { key, value });
+            }
+
+            return result;
+        }
+
+        private object ReadKey(BinaryReader reader, NaiveSerializerOptions options, bool isKeyNullable, IHandler keyHandler)
+        {
+            object result;
+
+            if (isKeyNullable)
+            {
+                result = NaiveSerializer.Read(reader, _keyType, options, keyHandler);
+            }
+            else
+            {
+                result = keyHandler.Read(reader, options);
+            }
+
+            return result;
+        }
+
+        private object ReadValue(BinaryReader reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
+        {
+            object result;
+
+            if (isNullable)
+            {
+                result = NaiveSerializer.Read(reader, _itemType, options, itemHandler);
+            }
+            else
+            {
+                result = itemHandler.Read(reader, options);
             }
 
             return result;
