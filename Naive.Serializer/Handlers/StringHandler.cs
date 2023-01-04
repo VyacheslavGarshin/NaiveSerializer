@@ -7,16 +7,14 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.String;
 
+        public StringHandler(Type type) : base(type) 
+        {
+            IsNullable = true;
+        }
+
         public override bool Match(Type type)
         {
             return type == typeof(string);
-        }
-
-        public override void SetType(Type type)
-        {
-            base.SetType(type);
-
-            IsNullable = true;
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)

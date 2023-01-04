@@ -10,7 +10,7 @@ Features:
 + Respects `DataContract` attributes
 
 Plans:
-+ Speed improovments on large list of objects
++ Speed improovments
 
 Usage
 =====

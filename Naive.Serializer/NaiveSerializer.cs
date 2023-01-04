@@ -30,8 +30,7 @@ namespace Naive.Serializer
             foreach (var handlerType in typeof(NaiveSerializer).Assembly.GetTypes()
                 .Where(x => x.GetInterface(nameof(IHandler)) != null && !x.IsInterface && !x.IsAbstract))
             {
-                var handler = Activator.CreateInstance(handlerType) as IHandler;
-                handler.SetType(null);
+                var handler = Activator.CreateInstance(handlerType, new object[] { null }) as IHandler;
 
                 if (_handlers[(int)handler.HandlerType] != null)
                 {
@@ -149,8 +148,7 @@ namespace Naive.Serializer
                 {
                     if (handler != null && handler.Match(type))
                     {
-                        result = (IHandler)Activator.CreateInstance(handler.GetType());
-                        result.SetType(type);
+                        result = (IHandler)Activator.CreateInstance(handler.GetType(), type);
                         _typeHandlers.TryAdd(type, result);
                         return result;
                     }

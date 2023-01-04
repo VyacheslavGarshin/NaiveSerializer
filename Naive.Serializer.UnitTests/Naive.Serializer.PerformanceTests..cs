@@ -185,8 +185,9 @@ namespace Naive.Serializer.UnitTests
             new []{ 10000, "dictionary", (object)new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "*" }, { 4, "*" }, { 5, "*" }, { 6, "*" }, { 7, "*" }, { 8, "*" }, { 9, "*" }, { 10, "*" } } },
             new []{ 10000, "ienumerable", (object)new int?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.Select(x => x) },
             new []{ 10000, "plain object", (object)new PlainObject { PObject = new(), PObjects = new PlainObject []{ new() } } },
-            new []{ 10000, "plain struct", (object)new PlainStruct { PlainStructs = new PlainStruct[] { new() } }, }, 
-            new []{ 10000, "plain object[]", (object)Enumerable.Range(0, 10).Select(x => new PlainObject()).ToArray() }
+            new []{ 10000, "plain struct", (object)new PlainStruct { PlainStructs = new PlainStruct[] { new() } }, },
+            new []{ 10000, "plain object[10]", (object)Enumerable.Range(0, 10).Select(x => new PlainObject()).ToArray() },
+            new []{ 10, "plain object[10000]", (object)Enumerable.Range(0, 10000).Select(x => new PlainObject()).ToArray() }
         };
 
         public class PlainObject

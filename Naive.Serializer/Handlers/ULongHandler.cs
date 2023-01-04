@@ -7,6 +7,10 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.ULong;
 
+        public ULongHandler(Type type) : base(type)
+        {
+        }
+
         public override bool Match(Type type)
         {
             return type == typeof(ulong) || type == typeof(ulong?);

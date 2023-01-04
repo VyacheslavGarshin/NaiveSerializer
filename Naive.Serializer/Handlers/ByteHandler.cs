@@ -7,6 +7,10 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.Byte;
 
+        public ByteHandler(Type type) : base(type)
+        {
+        }
+
         public override bool Match(Type type)
         {
             return type == typeof(byte) || type == typeof(byte?);

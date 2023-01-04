@@ -7,22 +7,20 @@ using Newtonsoft.Json;
 using Salar.Bois;
 using System.Text;
 
-[SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 3, invocationCount: 10)]
-public class BigBenchmark : Benchmark
+public class Program
 {
-    public BigBenchmark()
+    public static void Main(string[] args)
     {
-        ToSerialize = new List<object[]>
-        {
-            new object[] { "Serialize", "PlainClass[](10000)", Enumerable.Range(0, 10000).Select(x => new PlainClass()).ToArray() },
-        };
+        //var primitivesSummary = BenchmarkRunner.Run<PrimitivesBenchmark>();
+        var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
+        //var bigSummary = BenchmarkRunner.Run<BigBenchmark>();
     }
 }
 
-[SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 3, invocationCount: 1000)]
-public class SmallBenchmark : Benchmark
+[SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
+public class PrimitivesBenchmark : Benchmark
 {
-    public SmallBenchmark()
+    public PrimitivesBenchmark()
     {
         ToSerialize = new List<object[]>
         {
@@ -38,13 +36,37 @@ public class SmallBenchmark : Benchmark
             new object[] { "Serialize", "Guid",  Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}") },
             new object[] { "Serialize", "Enum", DateTimeKind.Utc },
             new object[] { "Serialize", "Byte[](10)", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+        };
+    }
+}
+
+[SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
+public class SmallBenchmark : Benchmark
+{
+    public SmallBenchmark()
+    {
+        ToSerialize = new List<object[]>
+        {
             new object[] { "Serialize", "Byte?[](10)", new byte?[] { 0, null, 2, null, 4, null, 6, null, 8, null } },
-            new object[] { "Serialize", "String[](10)", Enumerable.Range(0, 10).Select(x => "*").ToArray() },
-            new object[] { "Serialize", "List<String>(10)", Enumerable.Range(0, 10).Select(x => "*").ToList() },
+            new object[] { "Serialize", "String[](20)", Enumerable.Range(0, 10).Select(x => "*").ToArray() },
+            new object[] { "Serialize", "List<String>(20)", Enumerable.Range(0, 10).Select(x => "*").ToList() },
             new object[] { "Serialize", "PlainClass",  new PlainClass() },
-            new object[] { "Serialize", "PlainClass[](10)", Enumerable.Range(0, 10).Select(x => new PlainClass()).ToArray() },
+            new object[] { "Serialize", "PlainClass[](5)", Enumerable.Range(0, 5).Select(x => new PlainClass()).ToArray() },
             new object[] { "Serialize", "Object[](10)", new object[] { 0, null, "*", new DateTime(1000, 1, 1), new PlainClass(), Guid.NewGuid(), true, 7f, (byte)8, DateTimeKind.Utc } },
             new object[] { "Serialize", "Dic<int,string>(10)", Enumerable.Range(0, 10).Select((x, i) => i).ToDictionary((x) => x, (x) => x.ToString()) },
+        };
+    }
+}
+
+[SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 10)]
+public class BigBenchmark : Benchmark
+{
+    public BigBenchmark()
+    {
+        ToSerialize = new List<object[]>
+        {
+            new object[] { "Serialize", "PlainClass[](10000)", Enumerable.Range(0, 10000).Select(x => new PlainClass()).ToArray() },
+            new object[] { "Serialize", "List<Byte[]>(1000^2)", Enumerable.Range(0, 1000).Select(x => Enumerable.Range(0, 1000).Select(x => (byte)x).ToArray()).ToList() },
         };
     }
 }
@@ -180,14 +202,5 @@ public class Benchmark
 
         [Key("Bytes")]
         public byte[] Bytes { get; set; } = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    }
-}
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
-        var bigSummary = BenchmarkRunner.Run<BigBenchmark>();
     }
 }

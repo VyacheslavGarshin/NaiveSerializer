@@ -10,27 +10,22 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.IEnumerable;
 
-        private Type _itemType;
+        private readonly Type _itemType;
         
-        private IHandler _itemHandler;
+        private readonly IHandler _itemHandler;
         
-        private bool _createArray;
+        private readonly bool _createArray;
         
-        private bool _isCollection;
+        private readonly bool _isCollection;
         
-        private bool _isIEnumerable;
+        private readonly bool _isIEnumerable;
 
-        private bool _isList;
+        private readonly bool _isList;
+        
+        private readonly bool _isItemTypeObject;
 
-        public override bool Match(Type type)
+        public IEnumerableHandler(Type type) : base(type)
         {
-            return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
-        }
-
-        public override void SetType(Type type)
-        {
-            base.SetType(type);
-
             IsNullable = true;
             IsSimple = false;
 
@@ -55,50 +50,29 @@ namespace Naive.Serializer.Handlers
             }
 
             _createArray = Type.IsArray || Type.IsInterface || Type.ReflectedType == typeof(Enumerable);
-
             _isCollection = Type.GetInterface(nameof(ICollection)) != null;
+            _isList = Type.GetInterface(nameof(IList)) != null;
+            _isItemTypeObject = _itemType == typeof(object);
 
             if (!_isCollection)
             {
                 _isIEnumerable = Type.GetInterface(nameof(IEnumerable)) != null;
             }
+        }
 
-            _isList = Type.GetInterface(nameof(IList)) != null;
+        public override bool Match(Type type)
+        {
+            return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
-            int count = 0;
-
-            if (_isCollection)
-            {
-                count = ((ICollection)obj).Count;
-            }
-            else if (_isIEnumerable)
-            {
-                foreach (var item in (IEnumerable)obj)
-                {
-                    count++;
-                }
-            }
-            else
-            {
-                throw new NotSupportedException($"Type '{Type.Name}' is not supported in lists.");
-            }
-
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
-            writer.Write(count);
+            writer.Write(GetCount(obj));
 
             foreach (var item in obj as IEnumerable)
             {
-                if (IsNullable)
-                {
-                    NaiveSerializer.Write(writer, item, options, _itemHandler);
-                }
-                else
-                {
-                    _itemHandler.Write(writer, item, options);
-                }
+                WriteItem(writer, options, item);
             }
         }
 
@@ -115,12 +89,36 @@ namespace Naive.Serializer.Handlers
             var result = _createArray ? Array.CreateInstance(_itemType, count) : Activator.CreateInstance(Type);
 
             var addMethod = GetAddMethod(result);
+            var asIList = result as IList;
 
             for (var i = 0; i < count; i++)
             {
                 var item = ReadItem(reader, options, isNullable, itemHandler);
 
-                AddItem(result, addMethod, i, item);
+                AddItem(result, asIList, addMethod, i, item);
+            }
+
+            return result;
+        }
+
+        private int GetCount(object obj)
+        {
+            var result = 0;
+
+            if (_isCollection)
+            {
+                result = ((ICollection)obj).Count;
+            }
+            else if (_isIEnumerable)
+            {
+                foreach (var item in (IEnumerable)obj)
+                {
+                    result++;
+                }
+            }
+            else
+            {
+                throw new NotSupportedException($"Type '{Type.Name}' is not supported in lists.");
             }
 
             return result;
@@ -143,13 +141,25 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
+        private void WriteItem(BinaryWriter writer, NaiveSerializerOptions options, object item)
+        {
+            if (IsNullable)
+            {
+                NaiveSerializer.Write(writer, item, options, _itemHandler);
+            }
+            else
+            {
+                _itemHandler.Write(writer, item, options);
+            }
+        }
+
         private object ReadItem(BinaryReader reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
         {
             object result;
 
             if (isNullable)
             {
-                result = NaiveSerializer.Read(reader, _itemType != typeof(object) ? _itemType : null, options, itemHandler);
+                result = NaiveSerializer.Read(reader, !_isItemTypeObject ? _itemType : null, options, itemHandler);
             }
             else
             {
@@ -159,15 +169,15 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private void AddItem(object result, MethodInfo addMethod, int i, object item)
+        private void AddItem(object result, IList asIList, MethodInfo addMethod, int i, object item)
         {
             if (_createArray)
             {
-                ((IList)result)[i] = item;
+                asIList[i] = item;
             }
             else if (_isList)
             {
-                ((IList)result).Add(item);
+                asIList.Add(item);
             }
             else
             {

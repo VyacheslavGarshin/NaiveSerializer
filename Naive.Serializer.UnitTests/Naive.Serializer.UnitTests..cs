@@ -1,5 +1,4 @@
 using FluentAssertions;
-using System.Globalization;
 using System.Runtime.Serialization;
 
 namespace Naive.Serializer.UnitTests

@@ -9,15 +9,8 @@ namespace Naive.Serializer.Handlers
 
         private bool _isReadOnlyMemory;
 
-        public override bool Match(Type type)
+        public BytesHandler(Type type) : base(type)
         {
-            return type == typeof(byte[]) || type == typeof(ReadOnlyMemory<byte>) || type == typeof(ReadOnlyMemory<byte>?);
-        }
-
-        public override void SetType(Type type)
-        {
-            base.SetType(type);
-
             IsNullable = true; 
             IsSimple = false;
 
@@ -33,6 +26,11 @@ namespace Naive.Serializer.Handlers
                     IsNullable = false;
                 }
             }
+        }
+
+        public override bool Match(Type type)
+        {
+            return type == typeof(byte[]) || type == typeof(ReadOnlyMemory<byte>) || type == typeof(ReadOnlyMemory<byte>?);
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)

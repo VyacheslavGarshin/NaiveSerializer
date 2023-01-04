@@ -12,11 +12,9 @@ namespace Naive.Serializer.Handlers
             return type == typeof(char[]);
         }
 
-        public override void SetType(Type type)
+        public CharsHandler(Type type) : base(type)
         {
-            base.SetType(type);
-
-            IsNullable = true; 
+            IsNullable = true;
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)

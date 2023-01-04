@@ -15,7 +15,7 @@ namespace Naive.Serializer.Handlers
 
         public abstract bool Match(Type type);
 
-        public virtual void SetType(Type type)
+        public AbstractHandler(Type type)
         {
             Type = type;
 

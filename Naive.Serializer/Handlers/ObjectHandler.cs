@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -14,21 +15,16 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.Object;
 
-        private ConcurrentDictionary<string, Property> _properties = new();
+        private readonly ConcurrentDictionary<ReadOnlyMemory<byte>, Property> _properties = new(new BytesComparer());
 
-        private Property[] _sortedProperties = new Property[0];
+        private readonly Property[] _sortedProperties = new Property[0];
 
-        private bool _isObject;
+        private readonly bool _isObject;
+        
+        private readonly Func<object> _creator;
 
-        public override bool Match(Type type)
+        public ObjectHandler (Type type) : base(type)
         {
-            return true;
-        }
-
-        public override void SetType(Type type)
-        {
-            base.SetType(type);
-
             IsNullable = true;
             IsSimple = false;
 
@@ -38,22 +34,10 @@ namespace Naive.Serializer.Handlers
             }
             else
             {
-                if (type.IsValueType)
-                {
-                    var nullableStruct = Nullable.GetUnderlyingType(type);
-
-                    if (nullableStruct != null)
-                    {
-                        Type = nullableStruct;
-                    }
-                    else
-                    {
-                        IsNullable = false;
-                    }
-                }
+                SetIsNullable(type);
 
                 var dataContract = Type.GetCustomAttribute<DataContractAttribute>();
-                
+
                 var definitions = new List<Property>();
 
                 foreach (var definition in GetDefinitionCandidates())
@@ -68,7 +52,7 @@ namespace Naive.Serializer.Handlers
 
                     PrepareDefinition(definition, memberInfo);
 
-                    _properties.TryAdd(definition.Name, definition);
+                    _properties.TryAdd(new ReadOnlyMemory<byte>(definition.NameBytes), definition);
                     definitions.Add(definition);
                 }
 
@@ -76,6 +60,13 @@ namespace Naive.Serializer.Handlers
             }
 
             _isObject = Type != typeof(object);
+
+            _creator = CreateCreator();
+        }
+
+        public override bool Match(Type type)
+        {
+            return true;
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
@@ -86,7 +77,8 @@ namespace Naive.Serializer.Handlers
 
                 if (value != null || !options.IgnoreNullValue)
                 {
-                    writer.Write(property.Name);
+                    writer.Write((byte)property.NameBytes.Length);
+                    writer.Write(property.NameBytes);
 
                     property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
 
@@ -94,49 +86,68 @@ namespace Naive.Serializer.Handlers
                 }
             }
 
-            writer.Write(string.Empty);
+            writer.Write((byte)0);
         }
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var result = _isObject ? Activator.CreateInstance(Type) : new Dictionary<string, object>();
+            var result = _isObject ? _creator() : new Dictionary<string, object>();
+            var arrayPool = options.ArrayPool ?? ArrayPool<byte>.Shared;
 
-            do
+            byte[] nameBuffer = null;
+
+            try
             {
-                var name = reader.ReadString();
+                nameBuffer = arrayPool.Rent(byte.MaxValue);
 
-                if (string.IsNullOrEmpty(name))
+                do
                 {
-                    break;
-                }
+                    var nameLength = reader.ReadByte();
 
-                object value;
-
-                if (_isObject && _properties.TryGetValue(name, out var property))
-                {
-                    property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
-
-                    value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
-
-                    property.SetValue(result, value);
-                }
-                else
-                {
-                    if (!_isObject || options.IgnoreMissingMember)
+                    if (nameLength == 0)
                     {
-                        value = NaiveSerializer.Read(reader, null, options);
+                        break;
+                    }
 
-                        if (!_isObject)
-                        {
-                            ((Dictionary<string, object>)result).Add(name, value);
-                        }
+                    reader.BaseStream.Read(nameBuffer, 0, nameLength);
+                    var nameRom = new ReadOnlyMemory<byte>(nameBuffer, 0, nameLength);
+
+                    object value;
+
+                    if (_isObject && _properties.TryGetValue(nameRom, out var property))
+                    {
+                        property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
+
+                        value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
+
+                        property.SetValue(result, value);
                     }
                     else
                     {
-                        throw new MissingMemberException($"Property with name '{name}' is not found on class '{result.GetType().FullName}'.");
+                        if (!_isObject || options.IgnoreMissingMember)
+                        {
+                            value = NaiveSerializer.Read(reader, null, options);
+
+                            if (!_isObject)
+                            {
+                                ((Dictionary<string, object>)result).Add(Encoding.UTF8.GetString(nameRom.Span), value);
+                            }
+                        }
+                        else
+                        {
+                            throw new MissingMemberException($"Property with name '{Encoding.UTF8.GetString(nameRom.Span)}' is not found on class '{result.GetType().FullName}'.");
+                        }
                     }
+                } while (true);
+
+            }
+            finally
+            {
+                if (nameBuffer != null)
+                {
+                    arrayPool.Return(nameBuffer);
                 }
-            } while (true);
+            }
 
             return result;
         }
@@ -151,7 +162,24 @@ namespace Naive.Serializer.Handlers
                 .ToArray();
         }
 
-        private static void PrepareDefinition(Property definition, MemberInfo memberInfo)
+        private void SetIsNullable(Type type)
+        {
+            if (type.IsValueType)
+            {
+                var nullableStruct = Nullable.GetUnderlyingType(type);
+
+                if (nullableStruct != null)
+                {
+                    Type = nullableStruct;
+                }
+                else
+                {
+                    IsNullable = false;
+                }
+            }
+        }
+
+        private void PrepareDefinition(Property definition, MemberInfo memberInfo)
         {
             var dataMember = memberInfo.GetCustomAttribute<DataMemberAttribute>();
 
@@ -165,24 +193,27 @@ namespace Naive.Serializer.Handlers
                 }
             }
 
+            definition.NameBytes = Encoding.UTF8.GetBytes(definition.Name);
             definition.MemberType = definition.PropertyInfo?.PropertyType ?? definition.FieldInfo.FieldType;
             definition.GetValue = CreateGetter(definition);
             definition.SetValue = CreateSetter(definition);
         }
 
-        private static Type GetDeclaringType(Property property)
+        private Func<object> CreateCreator()
         {
-            return property.PropertyInfo?.DeclaringType ?? property.FieldInfo.DeclaringType;
+            var newExpr = Expression.New(Type);
+            var toObjExpr = Type.IsValueType
+               ? Expression.Convert(newExpr, typeof(object))
+               : Expression.TypeAs(newExpr, typeof(object));
+            return Expression.Lambda<Func<object>>(toObjExpr).Compile();
         }
 
-        private static Func<object, object> CreateGetter(Property property)
+        private Func<object, object> CreateGetter(Property property)
         {
-            var declaringType = GetDeclaringType(property);
-
             var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = declaringType.IsValueType
-                ? Expression.Convert(objInstanceExpr, declaringType)
-                : Expression.TypeAs(objInstanceExpr, declaringType);
+            var instanceExpr = Type.IsValueType
+                ? Expression.Convert(objInstanceExpr, Type)
+                : Expression.TypeAs(objInstanceExpr, Type);
             var propertyExpr = property.PropertyInfo != null
                 ? Expression.Property(instanceExpr, property.PropertyInfo)
                 : Expression.Field(instanceExpr, property.FieldInfo);
@@ -193,19 +224,18 @@ namespace Naive.Serializer.Handlers
             return Expression.Lambda<Func<object, object>>(propertyObjExpr, objInstanceExpr).Compile();
         }
 
-        private static Action<object, object> CreateSetter(Property property)
+        private Action<object, object> CreateSetter(Property property)
         {
-            var declaringType = GetDeclaringType(property);
             var propertyType = property.MemberType;
 
-            if (declaringType.IsValueType)
+            if (Type.IsValueType)
             {
                 return property.PropertyInfo != null ? property.PropertyInfo.SetValue : property.FieldInfo.SetValue;
             }
             else
             {
                 var objInstanceExpr = Expression.Parameter(typeof(object), "instance");
-                var instanceExpr = Expression.Convert(objInstanceExpr, declaringType);
+                var instanceExpr = Expression.Convert(objInstanceExpr, Type);
                 var propertyExpr = property.PropertyInfo != null
                     ? Expression.Property(instanceExpr, property.PropertyInfo)
                     : Expression.Field(instanceExpr, property.FieldInfo);
@@ -223,6 +253,8 @@ namespace Naive.Serializer.Handlers
         {
             public string Name { get; set; }
 
+            public byte[] NameBytes { get; set; }
+
             public int Order { get; set; }
 
             public PropertyInfo PropertyInfo { get; set; }
@@ -232,14 +264,51 @@ namespace Naive.Serializer.Handlers
             public Type MemberType { get; set; }
 
             public IHandler Handler { get; set; }
-            
+
             public Func<object, object> GetValue { get; set; }
             
             public Action<object, object> SetValue { get; set; }
-            
+
             public override string ToString()
             {
                 return $"{PropertyInfo.DeclaringType.Name}.{PropertyInfo.Name}{(Name != PropertyInfo.Name ? $"({Name})" : string.Empty)}";
+            }
+        }
+
+        private class BytesComparer : IEqualityComparer<ReadOnlyMemory<byte>>
+        {
+            public bool Equals(ReadOnlyMemory<byte> x, ReadOnlyMemory<byte> y)
+            {
+                if (x.Length != y.Length)
+                {
+                    return false;
+                };
+
+                var spanX = x.Span;
+                var spanY = y.Span;
+
+                for (var i = 0; i < spanX.Length; i++)
+                {
+                    if (spanX[i] != spanY[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public int GetHashCode(ReadOnlyMemory<byte> obj)
+            {
+                var result = 0;
+                var span = obj.Span;
+
+                for (var i = 0; i < span.Length; i++)
+                {
+                    result = HashCode.Combine(result, span[i]);
+                }
+
+                return result;
             }
         }
     }

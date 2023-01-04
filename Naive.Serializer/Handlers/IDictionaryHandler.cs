@@ -10,25 +10,18 @@ namespace Naive.Serializer.Handlers
     {
         public override HandlerType HandlerType { get; } = HandlerType.IDictionary;
 
-        private Type _keyType;
+        private readonly Type _keyType;
 
-        private Type _itemType;
+        private readonly Type _itemType;
 
-        private IHandler _keyHandler;
+        private readonly IHandler _keyHandler;
 
-        private IHandler _itemHandler;
+        private readonly IHandler _itemHandler;
         
-        private bool _isKeyNullable;
+        private readonly bool _isKeyNullable;
 
-        public override bool Match(Type type)
+        public IDictionaryHandler(Type type) : base(type)
         {
-            return type.GetInterfaces().Any(x => x == typeof(IDictionary));
-        }
-
-        public override void SetType(Type type)
-        {
-            base.SetType(type);
-
             _isKeyNullable = true;
             IsNullable = true;
             IsSimple = false;
@@ -51,7 +44,7 @@ namespace Naive.Serializer.Handlers
 
                 if (_itemType != typeof(object))
                 {
-                    _itemHandler = NaiveSerializer.GetTypeHandler(_itemType);             
+                    _itemHandler = NaiveSerializer.GetTypeHandler(_itemType);
                 }
 
                 if (_keyType.IsValueType && Nullable.GetUnderlyingType(_keyType) == null)
@@ -64,6 +57,11 @@ namespace Naive.Serializer.Handlers
                     IsNullable = false;
                 }
             }
+        }
+
+        public override bool Match(Type type)
+        {
+            return type.GetInterfaces().Any(x => x == typeof(IDictionary));
         }
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)

@@ -15,8 +15,6 @@ namespace Naive.Serializer.Handlers
 
         public bool Match(Type type);
 
-        public void SetType(Type type);
-
         public void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options);
 
         public object Read(BinaryReader reader, NaiveSerializerOptions options);
