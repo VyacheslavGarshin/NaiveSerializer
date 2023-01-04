@@ -37,3 +37,5 @@ Performance
 ===========
 
 Couple of times better than NewtonJson, a bit slower than [Bois](https://github.com/salarcode/Bois).
+
+Benchmark results are [here](https://github.com/VyacheslavGarshin/NaiveSerializer/tree/main/Naive.Serializer.Benchmark/Results).
