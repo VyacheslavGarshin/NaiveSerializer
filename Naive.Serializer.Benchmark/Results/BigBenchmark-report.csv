@@ -1,17 +1,17 @@
 Method,method,name,value,type,Mean,Error,StdDev,Median
-Bois,Deserialize,List<Byte[]>(1000^2),Byte[1003003],Syste(...)te[]] [48],186.0 ?s,5.60 ?s,16.43 ?s,184.8 ?s
-MsgPack,Deserialize,List<Byte[]>(1000^2),Byte[1003003],Syste(...)te[]] [48],604.0 ?s,36.92 ?s,98.54 ?s,565.9 ?s
-Naive,Deserialize,List<Byte[]>(1000^2),Byte[1005006],Syste(...)te[]] [48],181.0 ?s,3.58 ?s,7.23 ?s,181.1 ?s
-Json,Deserialize,List<Byte[]>(1000^2),Byte[1339001],Syste(...)te[]] [48],"5,168.9 ?s",101.43 ?s,148.67 ?s,"5,219.0 ?s"
-Json,Deserialize,PlainClass[](10000),Byte[1248916],Bench(...)ass[] [22],"22,385.6 ?s",468.49 ?s,"1,381.36 ?s","22,652.1 ?s"
-Bois,Deserialize,PlainClass[](10000),Byte[400003],Bench(...)ass[] [22],"3,966.6 ?s",90.27 ?s,261.89 ?s,"3,946.1 ?s"
-MsgPack,Deserialize,PlainClass[](10000),Byte[760003],Bench(...)ass[] [22],"4,988.3 ?s",99.55 ?s,129.45 ?s,"4,986.1 ?s"
-Naive,Deserialize,PlainClass[](10000),Byte[850006],Bench(...)ass[] [22],"8,816.5 ?s",172.46 ?s,205.30 ?s,"8,789.4 ?s"
-Naive,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,"1,538.8 ?s",334.79 ?s,987.12 ?s,959.1 ?s
-Json,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,"3,097.7 ?s",60.60 ?s,80.90 ?s,"3,060.5 ?s"
-Bois,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,652.2 ?s,45.08 ?s,124.15 ?s,656.6 ?s
-MsgPack,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,314.9 ?s,21.46 ?s,62.60 ?s,292.9 ?s
-Naive,Serialize,PlainClass[](10000),PlainClass[10000],?,"3,777.1 ?s",50.66 ?s,49.76 ?s,"3,779.2 ?s"
-Json,Serialize,PlainClass[](10000),PlainClass[10000],?,"9,752.1 ?s",191.93 ?s,179.53 ?s,"9,760.2 ?s"
-Bois,Serialize,PlainClass[](10000),PlainClass[10000],?,"2,588.8 ?s",33.66 ?s,28.11 ?s,"2,590.9 ?s"
-MsgPack,Serialize,PlainClass[](10000),PlainClass[10000],?,"2,078.9 ?s",17.47 ?s,19.42 ?s,"2,070.5 ?s"
+Bois,Deserialize,List<Byte[]>(1000^2),Byte[1003003],Syste(...)te[]] [48],186.0 μs,5.60 μs,16.43 μs,184.8 μs
+MsgPack,Deserialize,List<Byte[]>(1000^2),Byte[1003003],Syste(...)te[]] [48],604.0 μs,36.92 μs,98.54 μs,565.9 μs
+Naive,Deserialize,List<Byte[]>(1000^2),Byte[1005006],Syste(...)te[]] [48],181.0 μs,3.58 μs,7.23 μs,181.1 μs
+Json,Deserialize,List<Byte[]>(1000^2),Byte[1339001],Syste(...)te[]] [48],"5,168.9 μs",101.43 μs,148.67 μs,"5,219.0 μs"
+Json,Deserialize,PlainClass[](10000),Byte[1248916],Bench(...)ass[] [22],"22,385.6 μs",468.49 μs,"1,381.36 μs","22,652.1 μs"
+Bois,Deserialize,PlainClass[](10000),Byte[400003],Bench(...)ass[] [22],"3,966.6 μs",90.27 μs,261.89 μs,"3,946.1 μs"
+MsgPack,Deserialize,PlainClass[](10000),Byte[760003],Bench(...)ass[] [22],"4,988.3 μs",99.55 μs,129.45 μs,"4,986.1 μs"
+Naive,Deserialize,PlainClass[](10000),Byte[850006],Bench(...)ass[] [22],"8,816.5 μs",172.46 μs,205.30 μs,"8,789.4 μs"
+Naive,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,"1,538.8 μs",334.79 μs,987.12 μs,959.1 μs
+Json,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,"3,097.7 μs",60.60 μs,80.90 μs,"3,060.5 μs"
+Bois,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,652.2 μs,45.08 μs,124.15 μs,656.6 μs
+MsgPack,Serialize,List<Byte[]>(1000^2),Syste(...)te[]] [48],?,314.9 μs,21.46 μs,62.60 μs,292.9 μs
+Naive,Serialize,PlainClass[](10000),PlainClass[10000],?,"3,777.1 μs",50.66 μs,49.76 μs,"3,779.2 μs"
+Json,Serialize,PlainClass[](10000),PlainClass[10000],?,"9,752.1 μs",191.93 μs,179.53 μs,"9,760.2 μs"
+Bois,Serialize,PlainClass[](10000),PlainClass[10000],?,"2,588.8 μs",33.66 μs,28.11 μs,"2,590.9 μs"
+MsgPack,Serialize,PlainClass[](10000),PlainClass[10000],?,"2,078.9 μs",17.47 μs,19.42 μs,"2,070.5 μs"
