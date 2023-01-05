@@ -33,6 +33,14 @@ result = NaiveSerializer.Deserialize<ValueType>(bytes);
 result = NaiveSerializer.Deserialize(bytes);
 ```
 
+Installation
+============
+
+NuGet package is [here](https://www.nuget.org/packages/Naive.Serializer/).
+```
+> dotnet add package Naive.Serializer --version 1.0.0
+```
+
 Performance
 ===========
 
