@@ -11,8 +11,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        //var primitivesSummary = BenchmarkRunner.Run<PrimitivesBenchmark>();
-        //var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
+        var primitivesSummary = BenchmarkRunner.Run<PrimitivesBenchmark>();
+        var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
         var bigSummary = BenchmarkRunner.Run<BigBenchmark>();
     }
 }
