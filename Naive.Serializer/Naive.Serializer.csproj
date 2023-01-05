@@ -10,8 +10,7 @@
     <PackageDescription>.NET Standard binary serialization library.</PackageDescription>
     <RepositoryUrl>https://github.com/VyacheslavGarshin/NaiveSerializer</RepositoryUrl>
     <PackageTags>binary,serialization</PackageTags>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageLicenseUrl>https://github.com/VyacheslavGarshin/NaiveSerializer/blob/main/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
 </Project>
