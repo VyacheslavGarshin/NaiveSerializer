@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Naive.Serializer.Cogs;
+using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,9 +20,13 @@ namespace Naive.Serializer.Handlers
 
         private readonly Property[] _sortedProperties = new Property[0];
 
-        private readonly bool _isObject;
+        private readonly bool _isKnownObject;
         
         private readonly Func<object> _creator;
+
+        private readonly QuickTable<Property> _quickTable = new();
+
+        private readonly bool _isQuickTableFull;
 
         public ObjectHandler (Type type) : base(type)
         {
@@ -57,9 +62,16 @@ namespace Naive.Serializer.Handlers
                 }
 
                 _sortedProperties = definitions.OrderBy(x => x.Order).ToArray();
+
+                foreach (var prop in _sortedProperties)
+                {
+                    _quickTable.Add(prop.NameBytes, prop);
+                }
+
+                _isQuickTableFull = _quickTable.Count() == _sortedProperties.Length;
             }
 
-            _isObject = Type != typeof(object);
+            _isKnownObject = Type != typeof(object);
 
             _creator = CreateCreator();
         }
@@ -91,14 +103,13 @@ namespace Naive.Serializer.Handlers
 
         public override object Read(BinaryReader reader, NaiveSerializerOptions options)
         {
-            var result = _isObject ? _creator() : new Dictionary<string, object>();
-            var arrayPool = options.ArrayPool ?? ArrayPool<byte>.Shared;
-
+            var result = _isKnownObject ? _creator() : new Dictionary<string, object>();
+            
             byte[] nameBuffer = null;
 
             try
             {
-                nameBuffer = arrayPool.Rent(byte.MaxValue);
+                nameBuffer = options.ArrayPool.Rent(byte.MaxValue);
 
                 do
                 {
@@ -114,29 +125,42 @@ namespace Naive.Serializer.Handlers
 
                     object value;
 
-                    if (_isObject && _properties.TryGetValue(nameRom, out var property))
+                    if (_isKnownObject)
                     {
-                        property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
-
-                        value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
-
-                        property.SetValue(result, value);
-                    }
-                    else
-                    {
-                        if (!_isObject || options.IgnoreMissingMember)
+                        Property property = null;
+                        
+                        if (options.UsePropertiesIndex)
                         {
-                            value = NaiveSerializer.Read(reader, null, options);
+                            property = _quickTable.Get(nameRom, options.OptimisticIndexSearch && _isQuickTableFull);
+                        }
 
-                            if (!_isObject)
-                            {
-                                ((Dictionary<string, object>)result).Add(Encoding.UTF8.GetString(nameRom.Span), value);
-                            }
+                        if (property == null)
+                        {
+                            _properties.TryGetValue(nameRom, out property);
+                        }
+
+                        if (property != null)
+                        {
+                            property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
+
+                            value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
+                            property.SetValue(result, value);
                         }
                         else
                         {
-                            throw new MissingMemberException($"Property with name '{Encoding.UTF8.GetString(nameRom.Span)}' is not found on class '{result.GetType().FullName}'.");
+                            if (!options.IgnoreMissingMember)
+                            {
+                                throw new MissingMemberException($"Property with name '{Encoding.UTF8.GetString(nameRom.Span)}' is not found on class '{result.GetType().FullName}'.");
+                            }
+
+                            // skipread
+                            NaiveSerializer.Read(reader, null, options);
                         }
+                    }
+                    else
+                    {
+                        value = NaiveSerializer.Read(reader, null, options);
+                        ((Dictionary<string, object>)result).Add(Encoding.UTF8.GetString(nameRom.Span), value);
                     }
                 } while (true);
 
@@ -145,7 +169,7 @@ namespace Naive.Serializer.Handlers
             {
                 if (nameBuffer != null)
                 {
-                    arrayPool.Return(nameBuffer);
+                    options.ArrayPool.Return(nameBuffer);
                 }
             }
 
@@ -273,43 +297,6 @@ namespace Naive.Serializer.Handlers
             {
                 return $"{PropertyInfo.DeclaringType.Name}.{PropertyInfo.Name}{(Name != PropertyInfo.Name ? $"({Name})" : string.Empty)}";
             }
-        }
-
-        private class BytesComparer : IEqualityComparer<ReadOnlyMemory<byte>>
-        {
-            public bool Equals(ReadOnlyMemory<byte> x, ReadOnlyMemory<byte> y)
-            {
-                if (x.Length != y.Length)
-                {
-                    return false;
-                };
-
-                var spanX = x.Span;
-                var spanY = y.Span;
-
-                for (var i = 0; i < spanX.Length; i++)
-                {
-                    if (spanX[i] != spanY[i])
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            public int GetHashCode(ReadOnlyMemory<byte> obj)
-            {
-                var result = 0;
-                var span = obj.Span;
-
-                for (var i = 0; i < span.Length; i++)
-                {
-                    result = HashCode.Combine(result, span[i]);
-                }
-
-                return result;
-            }
-        }
+        }    
     }
 }

@@ -22,7 +22,7 @@ namespace Naive.Serializer.Handlers
 
         private readonly bool _isList;
         
-        private readonly bool _isItemTypeObject;
+        private readonly bool _isKnownItemType;
 
         public IEnumerableHandler(Type type) : base(type)
         {
@@ -52,7 +52,7 @@ namespace Naive.Serializer.Handlers
             _createArray = Type.IsArray || Type.IsInterface || Type.ReflectedType == typeof(Enumerable);
             _isCollection = Type.GetInterface(nameof(ICollection)) != null;
             _isList = Type.GetInterface(nameof(IList)) != null;
-            _isItemTypeObject = _itemType == typeof(object);
+            _isKnownItemType = _itemType != typeof(object);
 
             if (!_isCollection)
             {
@@ -159,7 +159,7 @@ namespace Naive.Serializer.Handlers
 
             if (isNullable)
             {
-                result = NaiveSerializer.Read(reader, !_isItemTypeObject ? _itemType : null, options, itemHandler);
+                result = NaiveSerializer.Read(reader, _isKnownItemType ? _itemType : null, options, itemHandler);
             }
             else
             {

@@ -1,97 +1,97 @@
-Method,method,name,value,type,Mean,Error,StdDev,Median
-Bois,Deserialize,Bool,Byte[1],System.Boolean,103.05 ns,1.668 ns,1.478 ns,102.65 ns
-MsgPack,Deserialize,Bool,Byte[1],System.Boolean,573.90 ns,1.745 ns,1.547 ns,574.10 ns
-Naive,Deserialize,Bool,Byte[2],System.Boolean,101.01 ns,1.855 ns,1.645 ns,100.40 ns
-Json,Deserialize,Bool,Byte[4],System.Boolean,484.04 ns,9.702 ns,15.389 ns,484.70 ns
-Bois,Deserialize,Byte[](10),Byte[11],System.Byte[],128.22 ns,0.335 ns,0.279 ns,128.20 ns
-MsgPack,Deserialize,Byte[](10),Byte[12],System.Byte[],874.58 ns,6.690 ns,6.258 ns,874.20 ns
-Naive,Deserialize,Byte[](10),Byte[15],System.Byte[],143.37 ns,2.872 ns,3.308 ns,142.20 ns
-Json,Deserialize,Byte[](10),Byte[18],System.Byte[],589.20 ns,11.819 ns,15.778 ns,587.20 ns
-Bois,Deserialize,DateTime,Byte[10],System.DateTime,152.24 ns,1.210 ns,1.132 ns,151.70 ns
-MsgPack,Deserialize,DateTime,Byte[15],System.DateTime,839.05 ns,11.293 ns,10.563 ns,838.70 ns
-Json,Deserialize,DateTime,Byte[21],System.DateTime,690.39 ns,13.537 ns,13.901 ns,689.40 ns
-Naive,Deserialize,DateTime,Byte[9],System.DateTime,106.02 ns,0.302 ns,0.252 ns,106.00 ns
-Json,Deserialize,Enum,Byte[1],System.DateTimeKind,827.73 ns,16.428 ns,21.931 ns,821.20 ns
-Bois,Deserialize,Enum,Byte[1],System.DateTimeKind,229.79 ns,1.189 ns,0.993 ns,229.40 ns
-MsgPack,Deserialize,Enum,Byte[1],System.DateTimeKind,612.39 ns,5.898 ns,5.228 ns,610.45 ns
-Naive,Deserialize,Enum,Byte[5],System.DateTimeKind,201.74 ns,1.758 ns,1.558 ns,201.75 ns
-Json,Deserialize,Float(1),Byte[3],System.Single,682.45 ns,13.535 ns,11.999 ns,679.20 ns
-Bois,Deserialize,Float(1),Byte[3],System.Single,143.65 ns,0.820 ns,0.727 ns,143.35 ns
-Naive,Deserialize,Float(1),Byte[5],System.Single,103.87 ns,1.235 ns,0.964 ns,103.55 ns
-MsgPack,Deserialize,Float(1),Byte[5],System.Single,652.38 ns,3.344 ns,2.964 ns,651.75 ns
-Json,Deserialize,Float(MaxValue),Byte[13],System.Single,875.21 ns,17.121 ns,19.717 ns,871.60 ns
-Naive,Deserialize,Float(MaxValue),Byte[5],System.Single,105.16 ns,0.732 ns,0.571 ns,105.00 ns
-Bois,Deserialize,Float(MaxValue),Byte[5],System.Single,123.64 ns,1.044 ns,0.925 ns,123.40 ns
-MsgPack,Deserialize,Float(MaxValue),Byte[5],System.Single,633.83 ns,5.715 ns,5.066 ns,633.85 ns
-Naive,Deserialize,Guid,Byte[17],System.Guid,118.19 ns,0.672 ns,0.525 ns,118.00 ns
-Bois,Deserialize,Guid,Byte[17],System.Guid,131.16 ns,1.015 ns,0.900 ns,131.00 ns
-Json,Deserialize,Guid,Byte[38],System.Guid,922.41 ns,17.506 ns,17.977 ns,917.20 ns
-MsgPack,Deserialize,Guid,Byte[38],System.Guid,"1,006.16 ns",5.080 ns,4.503 ns,"1,006.40 ns"
-Json,Deserialize,Int(1),Byte[1],System.Int32,551.49 ns,11.679 ns,33.883 ns,544.20 ns
-Bois,Deserialize,Int(1),Byte[1],System.Int32,104.76 ns,0.302 ns,0.268 ns,104.70 ns
-MsgPack,Deserialize,Int(1),Byte[1],System.Int32,601.91 ns,7.442 ns,8.272 ns,599.60 ns
-Naive,Deserialize,Int(1),Byte[5],System.Int32,101.50 ns,0.825 ns,0.644 ns,101.35 ns
-Json,Deserialize,Int(MaxValue),Byte[10],System.Int32,581.48 ns,9.777 ns,18.602 ns,572.40 ns
-Naive,Deserialize,Int(MaxValue),Byte[5],System.Int32,102.29 ns,1.296 ns,1.149 ns,101.95 ns
-Bois,Deserialize,Int(MaxValue),Byte[5],System.Int32,121.28 ns,1.854 ns,2.060 ns,120.80 ns
-MsgPack,Deserialize,Int(MaxValue),Byte[5],System.Int32,668.20 ns,12.646 ns,11.211 ns,666.40 ns
-Bois,Deserialize,Null,?,?,NA,NA,NA,NA
-MsgPack,Deserialize,Null,?,?,NA,NA,NA,NA
-Naive,Deserialize,Null,Byte[1],?,87.37 ns,1.732 ns,1.994 ns,86.40 ns
-Json,Deserialize,Null,Byte[4],?,400.12 ns,7.809 ns,9.590 ns,396.20 ns
-Bois,Deserialize,String(10),Byte[11],System.String,159.74 ns,0.311 ns,0.260 ns,159.70 ns
-MsgPack,Deserialize,String(10),Byte[11],System.String,735.13 ns,9.748 ns,9.118 ns,733.80 ns
-Naive,Deserialize,String(10),Byte[12],System.String,169.39 ns,3.223 ns,3.449 ns,168.40 ns
-Json,Deserialize,String(10),Byte[12],System.String,562.12 ns,11.252 ns,18.799 ns,565.80 ns
-Json,Deserialize,TimeSpan,Byte[10],System.TimeSpan,"1,056.78 ns",18.913 ns,19.422 ns,"1,054.30 ns"
-Bois,Deserialize,TimeSpan,Byte[6],System.TimeSpan,127.26 ns,0.756 ns,0.670 ns,127.00 ns
-Naive,Deserialize,TimeSpan,Byte[9],System.TimeSpan,113.01 ns,2.268 ns,2.699 ns,111.70 ns
-MsgPack,Deserialize,TimeSpan,Byte[9],System.TimeSpan,662.85 ns,6.793 ns,6.355 ns,664.00 ns
-Naive,Serialize,Bool,True,?,123.47 ns,1.120 ns,0.874 ns,123.25 ns
-Json,Serialize,Bool,True,?,403.93 ns,7.829 ns,8.377 ns,400.95 ns
-Bois,Serialize,Bool,True,?,125.04 ns,2.210 ns,2.269 ns,124.50 ns
-MsgPack,Serialize,Bool,True,?,249.53 ns,2.498 ns,2.086 ns,249.20 ns
-Naive,Serialize,Byte[](10),Byte[10],?,149.49 ns,0.783 ns,0.611 ns,149.40 ns
-Json,Serialize,Byte[](10),Byte[10],?,551.23 ns,10.211 ns,9.552 ns,551.50 ns
-Bois,Serialize,Byte[](10),Byte[10],?,145.95 ns,1.048 ns,0.819 ns,145.80 ns
-MsgPack,Serialize,Byte[](10),Byte[10],?,325.04 ns,6.572 ns,9.214 ns,326.70 ns
-Naive,Serialize,DateTime,01/01/1000 00:00:00,?,135.16 ns,0.821 ns,0.728 ns,134.90 ns
-Json,Serialize,DateTime,01/01/1000 00:00:00,?,487.78 ns,4.842 ns,4.044 ns,487.20 ns
-Bois,Serialize,DateTime,01/01/1000 00:00:00,?,185.52 ns,3.594 ns,3.995 ns,183.40 ns
-MsgPack,Serialize,DateTime,01/01/1000 00:00:00,?,312.78 ns,2.528 ns,2.111 ns,312.30 ns
-Naive,Serialize,Enum,Utc,?,138.64 ns,2.837 ns,2.913 ns,137.20 ns
-Json,Serialize,Enum,Utc,?,393.27 ns,6.754 ns,6.318 ns,391.80 ns
-Bois,Serialize,Enum,Utc,?,175.22 ns,3.490 ns,4.538 ns,175.70 ns
-MsgPack,Serialize,Enum,Utc,?,392.71 ns,0.724 ns,0.605 ns,392.80 ns
-Naive,Serialize,Float(1),1,?,129.35 ns,0.866 ns,0.676 ns,129.40 ns
-Json,Serialize,Float(1),1,?,610.61 ns,12.163 ns,18.574 ns,602.70 ns
-Bois,Serialize,Float(1),1,?,150.61 ns,3.046 ns,3.259 ns,151.25 ns
-MsgPack,Serialize,Float(1),1,?,280.34 ns,5.667 ns,5.023 ns,277.35 ns
-Naive,Serialize,Float(MaxValue),3.4028235E+38,?,131.86 ns,0.823 ns,0.729 ns,131.70 ns
-Json,Serialize,Float(MaxValue),3.4028235E+38,?,643.80 ns,12.694 ns,13.036 ns,637.70 ns
-Bois,Serialize,Float(MaxValue),3.4028235E+38,?,149.14 ns,0.861 ns,0.763 ns,149.00 ns
-MsgPack,Serialize,Float(MaxValue),3.4028235E+38,?,295.41 ns,5.955 ns,9.095 ns,292.80 ns
-Naive,Serialize,Guid,6f961(...)964ff [36],?,140.89 ns,2.415 ns,1.886 ns,140.50 ns
-Json,Serialize,Guid,6f961(...)964ff [36],?,480.83 ns,7.981 ns,8.870 ns,478.70 ns
-Bois,Serialize,Guid,6f961(...)964ff [36],?,158.24 ns,1.408 ns,1.176 ns,157.90 ns
-MsgPack,Serialize,Guid,6f961(...)964ff [36],?,527.32 ns,10.518 ns,14.397 ns,530.45 ns
-Naive,Serialize,Int(1),1,?,132.95 ns,2.595 ns,2.988 ns,132.10 ns
-Json,Serialize,Int(1),1,?,396.29 ns,7.903 ns,12.304 ns,391.35 ns
-Bois,Serialize,Int(1),1,?,126.11 ns,2.560 ns,2.739 ns,124.65 ns
-MsgPack,Serialize,Int(1),1,?,288.25 ns,3.987 ns,3.329 ns,287.60 ns
-Naive,Serialize,Int(MaxValue),2147483647,?,132.69 ns,2.670 ns,2.367 ns,131.75 ns
-Json,Serialize,Int(MaxValue),2147483647,?,431.51 ns,3.532 ns,2.949 ns,431.70 ns
-Bois,Serialize,Int(MaxValue),2147483647,?,147.45 ns,0.724 ns,0.565 ns,147.30 ns
-MsgPack,Serialize,Int(MaxValue),2147483647,?,280.86 ns,5.634 ns,5.533 ns,279.60 ns
-Naive,Serialize,Null,?,?,96.99 ns,1.997 ns,4.033 ns,96.25 ns
-Json,Serialize,Null,?,?,307.34 ns,6.137 ns,10.586 ns,306.00 ns
-Bois,Serialize,Null,?,?,NA,NA,NA,NA
-MsgPack,Serialize,Null,?,?,168.41 ns,0.922 ns,0.770 ns,168.30 ns
-Naive,Serialize,String(10),**********,?,149.42 ns,1.411 ns,1.102 ns,149.25 ns
-Json,Serialize,String(10),**********,?,441.64 ns,8.072 ns,8.637 ns,441.00 ns
-Bois,Serialize,String(10),**********,?,185.55 ns,0.757 ns,0.671 ns,185.35 ns
-MsgPack,Serialize,String(10),**********,?,264.18 ns,5.356 ns,9.520 ns,268.50 ns
-Naive,Serialize,TimeSpan,10:10:10,?,132.58 ns,1.004 ns,0.890 ns,132.35 ns
-Json,Serialize,TimeSpan,10:10:10,?,446.62 ns,8.795 ns,8.227 ns,446.70 ns
-Bois,Serialize,TimeSpan,10:10:10,?,165.26 ns,3.337 ns,4.786 ns,162.60 ns
-MsgPack,Serialize,TimeSpan,10:10:10,?,364.41 ns,4.488 ns,3.748 ns,365.50 ns
+Method,method,name,value,type,Mean,Error,StdDev
+Bois,Deserialize,Bool,Byte[1],System.Boolean,107.90 ns,2.186 ns,2.684 ns
+MsgPack,Deserialize,Bool,Byte[1],System.Boolean,583.13 ns,3.515 ns,3.116 ns
+Naive,Deserialize,Bool,Byte[2],System.Boolean,103.78 ns,2.135 ns,2.993 ns
+Json,Deserialize,Bool,Byte[4],System.Boolean,510.52 ns,10.296 ns,13.745 ns
+Bois,Deserialize,Byte[](10),Byte[11],System.Byte[],130.30 ns,2.185 ns,1.824 ns
+MsgPack,Deserialize,Byte[](10),Byte[12],System.Byte[],884.01 ns,12.039 ns,10.672 ns
+Naive,Deserialize,Byte[](10),Byte[15],System.Byte[],144.71 ns,2.272 ns,2.014 ns
+Json,Deserialize,Byte[](10),Byte[18],System.Byte[],586.97 ns,11.533 ns,16.541 ns
+Bois,Deserialize,DateTime,Byte[10],System.DateTime,153.02 ns,3.050 ns,4.658 ns
+MsgPack,Deserialize,DateTime,Byte[15],System.DateTime,834.32 ns,6.105 ns,5.412 ns
+Json,Deserialize,DateTime,Byte[21],System.DateTime,680.01 ns,13.165 ns,17.575 ns
+Naive,Deserialize,DateTime,Byte[9],System.DateTime,107.85 ns,2.237 ns,2.747 ns
+Json,Deserialize,Enum,Byte[1],System.DateTimeKind,857.30 ns,16.898 ns,28.234 ns
+Bois,Deserialize,Enum,Byte[1],System.DateTimeKind,223.39 ns,1.660 ns,1.553 ns
+MsgPack,Deserialize,Enum,Byte[1],System.DateTimeKind,600.97 ns,3.504 ns,2.735 ns
+Naive,Deserialize,Enum,Byte[5],System.DateTimeKind,206.07 ns,3.734 ns,3.493 ns
+Json,Deserialize,Float(1),Byte[3],System.Single,655.59 ns,13.153 ns,25.024 ns
+Bois,Deserialize,Float(1),Byte[3],System.Single,144.40 ns,2.446 ns,2.169 ns
+Naive,Deserialize,Float(1),Byte[5],System.Single,107.44 ns,2.162 ns,2.124 ns
+MsgPack,Deserialize,Float(1),Byte[5],System.Single,664.68 ns,11.318 ns,10.033 ns
+Json,Deserialize,Float(MaxValue),Byte[13],System.Single,844.16 ns,13.927 ns,14.902 ns
+Naive,Deserialize,Float(MaxValue),Byte[5],System.Single,104.30 ns,2.102 ns,2.734 ns
+Bois,Deserialize,Float(MaxValue),Byte[5],System.Single,124.02 ns,2.515 ns,2.583 ns
+MsgPack,Deserialize,Float(MaxValue),Byte[5],System.Single,668.31 ns,8.815 ns,7.815 ns
+Naive,Deserialize,Guid,Byte[17],System.Guid,123.36 ns,2.549 ns,3.656 ns
+Bois,Deserialize,Guid,Byte[17],System.Guid,134.29 ns,2.341 ns,2.190 ns
+Json,Deserialize,Guid,Byte[38],System.Guid,931.12 ns,18.456 ns,26.469 ns
+MsgPack,Deserialize,Guid,Byte[38],System.Guid,"1,019.97 ns",5.199 ns,4.059 ns
+Json,Deserialize,Int(1),Byte[1],System.Int32,557.13 ns,10.441 ns,13.577 ns
+Bois,Deserialize,Int(1),Byte[1],System.Int32,106.55 ns,1.611 ns,1.507 ns
+MsgPack,Deserialize,Int(1),Byte[1],System.Int32,596.12 ns,6.561 ns,6.137 ns
+Naive,Deserialize,Int(1),Byte[5],System.Int32,103.84 ns,1.881 ns,1.760 ns
+Json,Deserialize,Int(MaxValue),Byte[10],System.Int32,603.83 ns,10.376 ns,15.210 ns
+Naive,Deserialize,Int(MaxValue),Byte[5],System.Int32,104.30 ns,1.957 ns,2.678 ns
+Bois,Deserialize,Int(MaxValue),Byte[5],System.Int32,121.26 ns,2.429 ns,3.325 ns
+MsgPack,Deserialize,Int(MaxValue),Byte[5],System.Int32,669.81 ns,8.815 ns,7.815 ns
+Bois,Deserialize,Null,?,?,NA,NA,NA
+MsgPack,Deserialize,Null,?,?,NA,NA,NA
+Naive,Deserialize,Null,Byte[1],?,88.54 ns,1.778 ns,1.747 ns
+Json,Deserialize,Null,Byte[4],?,408.15 ns,7.969 ns,12.169 ns
+Bois,Deserialize,String(10),Byte[11],System.String,165.47 ns,3.235 ns,3.851 ns
+MsgPack,Deserialize,String(10),Byte[11],System.String,723.45 ns,8.348 ns,7.809 ns
+Naive,Deserialize,String(10),Byte[12],System.String,170.17 ns,3.400 ns,4.653 ns
+Json,Deserialize,String(10),Byte[12],System.String,527.56 ns,10.128 ns,10.401 ns
+Json,Deserialize,TimeSpan,Byte[10],System.TimeSpan,"1,061.28 ns",21.277 ns,23.650 ns
+Bois,Deserialize,TimeSpan,Byte[6],System.TimeSpan,133.18 ns,2.022 ns,1.792 ns
+Naive,Deserialize,TimeSpan,Byte[9],System.TimeSpan,108.68 ns,2.104 ns,1.968 ns
+MsgPack,Deserialize,TimeSpan,Byte[9],System.TimeSpan,684.35 ns,4.760 ns,3.975 ns
+Naive,Serialize,Bool,True,?,133.96 ns,2.747 ns,4.357 ns
+Json,Serialize,Bool,True,?,417.88 ns,8.189 ns,8.763 ns
+Bois,Serialize,Bool,True,?,126.01 ns,2.480 ns,2.856 ns
+MsgPack,Serialize,Bool,True,?,256.75 ns,2.111 ns,1.763 ns
+Naive,Serialize,Byte[](10),Byte[10],?,150.98 ns,2.323 ns,1.939 ns
+Json,Serialize,Byte[](10),Byte[10],?,542.48 ns,10.376 ns,10.190 ns
+Bois,Serialize,Byte[](10),Byte[10],?,150.68 ns,2.970 ns,3.647 ns
+MsgPack,Serialize,Byte[](10),Byte[10],?,334.65 ns,6.708 ns,10.040 ns
+Naive,Serialize,DateTime,01/01/1000 00:00:00,?,136.25 ns,2.724 ns,4.078 ns
+Json,Serialize,DateTime,01/01/1000 00:00:00,?,524.74 ns,10.498 ns,9.820 ns
+Bois,Serialize,DateTime,01/01/1000 00:00:00,?,184.88 ns,2.807 ns,2.344 ns
+MsgPack,Serialize,DateTime,01/01/1000 00:00:00,?,329.82 ns,2.015 ns,1.683 ns
+Naive,Serialize,Enum,Utc,?,141.96 ns,2.823 ns,2.899 ns
+Json,Serialize,Enum,Utc,?,405.32 ns,6.268 ns,5.556 ns
+Bois,Serialize,Enum,Utc,?,176.16 ns,3.061 ns,3.144 ns
+MsgPack,Serialize,Enum,Utc,?,412.43 ns,6.697 ns,7.166 ns
+Naive,Serialize,Float(1),1,?,135.80 ns,2.621 ns,2.189 ns
+Json,Serialize,Float(1),1,?,605.10 ns,12.122 ns,13.959 ns
+Bois,Serialize,Float(1),1,?,154.17 ns,2.967 ns,4.441 ns
+MsgPack,Serialize,Float(1),1,?,294.70 ns,5.682 ns,5.315 ns
+Naive,Serialize,Float(MaxValue),3.4028235E+38,?,133.69 ns,2.214 ns,1.963 ns
+Json,Serialize,Float(MaxValue),3.4028235E+38,?,660.65 ns,13.276 ns,13.038 ns
+Bois,Serialize,Float(MaxValue),3.4028235E+38,?,151.34 ns,1.899 ns,1.683 ns
+MsgPack,Serialize,Float(MaxValue),3.4028235E+38,?,284.54 ns,2.374 ns,1.983 ns
+Naive,Serialize,Guid,6f961(...)964ff [36],?,144.05 ns,2.927 ns,2.594 ns
+Json,Serialize,Guid,6f961(...)964ff [36],?,515.34 ns,10.383 ns,9.204 ns
+Bois,Serialize,Guid,6f961(...)964ff [36],?,158.41 ns,0.999 ns,0.834 ns
+MsgPack,Serialize,Guid,6f961(...)964ff [36],?,537.70 ns,10.591 ns,11.332 ns
+Naive,Serialize,Int(1),1,?,135.79 ns,2.453 ns,2.175 ns
+Json,Serialize,Int(1),1,?,386.33 ns,3.203 ns,2.675 ns
+Bois,Serialize,Int(1),1,?,131.22 ns,2.672 ns,4.000 ns
+MsgPack,Serialize,Int(1),1,?,299.83 ns,5.790 ns,6.196 ns
+Naive,Serialize,Int(MaxValue),2147483647,?,136.20 ns,2.403 ns,2.572 ns
+Json,Serialize,Int(MaxValue),2147483647,?,445.45 ns,8.891 ns,10.584 ns
+Bois,Serialize,Int(MaxValue),2147483647,?,149.28 ns,2.520 ns,2.104 ns
+MsgPack,Serialize,Int(MaxValue),2147483647,?,301.84 ns,1.826 ns,1.525 ns
+Naive,Serialize,Null,?,?,96.47 ns,1.914 ns,2.684 ns
+Json,Serialize,Null,?,?,300.40 ns,5.895 ns,7.870 ns
+Bois,Serialize,Null,?,?,NA,NA,NA
+MsgPack,Serialize,Null,?,?,162.01 ns,2.729 ns,2.419 ns
+Naive,Serialize,String(10),**********,?,152.52 ns,3.071 ns,2.564 ns
+Json,Serialize,String(10),**********,?,434.22 ns,8.172 ns,9.083 ns
+Bois,Serialize,String(10),**********,?,193.96 ns,3.804 ns,4.811 ns
+MsgPack,Serialize,String(10),**********,?,262.58 ns,5.190 ns,7.443 ns
+Naive,Serialize,TimeSpan,10:10:10,?,133.96 ns,1.938 ns,1.813 ns
+Json,Serialize,TimeSpan,10:10:10,?,440.94 ns,5.030 ns,4.459 ns
+Bois,Serialize,TimeSpan,10:10:10,?,171.79 ns,3.452 ns,5.861 ns
+MsgPack,Serialize,TimeSpan,10:10:10,?,371.75 ns,7.284 ns,6.457 ns

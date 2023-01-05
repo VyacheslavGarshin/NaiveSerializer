@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Naive.Serializer
+namespace Naive.Serializer.Cogs
 {
     public class RomStream : Stream
     {

@@ -69,7 +69,7 @@ namespace Naive.Serializer.UnitTests
             {
                 for (var i = 0; i < count; i++)
                 {
-                    objD = NaiveSerializer.Deserialize(bytes, obj?.GetType());
+                    objD = NaiveSerializer.Deserialize(bytes, obj?.GetType(), new NaiveSerializerOptions { OptimisticIndexSearch = true });
                 }
 
                 try

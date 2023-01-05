@@ -1,4 +1,5 @@
-﻿using Naive.Serializer.Handlers;
+﻿using Naive.Serializer.Cogs;
+using Naive.Serializer.Handlers;
 using System;
 using System.Collections.Concurrent;
 using System.IO;

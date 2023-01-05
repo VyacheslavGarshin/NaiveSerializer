@@ -191,7 +191,7 @@ namespace Naive.Serializer.UnitTests
         static object[] TestBytesCases =
         {
             new object[]{ "null", null, true },
-            new object[]{ "byte[]", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, true },
+            new object[]{ "byte[]", new byte[] { byte.MinValue, 1, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue }, true },
             new object[]{ "read only memory", new ReadOnlyMemory<byte>(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), false },
         };
 
@@ -215,8 +215,8 @@ namespace Naive.Serializer.UnitTests
 
         static object[] TestIEnumerableCases =
         {
-            new object[]{ "byte?[]", new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
-            new object[]{ "list byte", new List<byte> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[]{ "byte?[]", new byte?[] { null, byte.MinValue, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue } },
+            new object[]{ "list byte", new List<byte> { byte.MinValue, 1, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue } },
             new object[]{ "list byte?", new List<byte?> { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new object[]{ "list string", new List<string> { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new object[]{ "string[]", new string[] { null, string.Empty, "*", "*", "*", "*", "*", "*", "*", "*" } },

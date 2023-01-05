@@ -20,6 +20,8 @@ namespace Naive.Serializer.Handlers
         
         private readonly bool _isKeyNullable;
 
+        private readonly bool _isKnownItemType;
+
         public IDictionaryHandler(Type type) : base(type)
         {
             _isKeyNullable = true;
@@ -57,6 +59,8 @@ namespace Naive.Serializer.Handlers
                     IsNullable = false;
                 }
             }
+
+            _isKnownItemType = _itemType != typeof(object);
         }
 
         public override bool Match(Type type)
@@ -147,7 +151,7 @@ namespace Naive.Serializer.Handlers
 
             if (isNullable)
             {
-                result = NaiveSerializer.Read(reader, _itemType, options, itemHandler);
+                result = NaiveSerializer.Read(reader, _isKnownItemType ? _itemType : null, options, itemHandler);
             }
             else
             {
