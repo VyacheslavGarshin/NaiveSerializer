@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class LongHandler : AbstractHandler
+    internal class LongHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Long;
 

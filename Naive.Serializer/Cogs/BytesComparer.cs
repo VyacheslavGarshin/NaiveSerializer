@@ -3,8 +3,12 @@ using System.Collections.Generic;
 
 namespace Naive.Serializer.Cogs
 {
+    /// <summary>
+    /// Comparer by array content.
+    /// </summary>
     public class BytesComparer : IEqualityComparer<ReadOnlyMemory<byte>>
     {
+        /// <inheritdoc/>
         public bool Equals(ReadOnlyMemory<byte> x, ReadOnlyMemory<byte> y)
         {
             if (x.Length != y.Length)
@@ -26,6 +30,7 @@ namespace Naive.Serializer.Cogs
             return true;
         }
 
+        /// <inheritdoc/>
         public int GetHashCode(ReadOnlyMemory<byte> obj)
         {
             var result = 0;

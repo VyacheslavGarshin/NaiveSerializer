@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public interface IHandler
+    internal interface IHandler
     {
         public Type Type { get; }
 

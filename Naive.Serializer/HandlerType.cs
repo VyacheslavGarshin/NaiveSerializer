@@ -4,7 +4,7 @@
     /// 
     /// </summary>
     /// <remarks>Maximum is <see cref="byte.MaxValue"/></remarks>
-    public enum HandlerType
+    internal enum HandlerType
     {
         Null = 0,
         SByte = 1,

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class UShortHandler : AbstractHandler
+    internal class UShortHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.UShort;
 

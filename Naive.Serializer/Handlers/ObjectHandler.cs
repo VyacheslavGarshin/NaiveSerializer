@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Naive.Serializer.Handlers
 {
-    public class ObjectHandler : AbstractHandler
+    internal class ObjectHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Object;
 

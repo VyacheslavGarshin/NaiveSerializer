@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class DecimalHandler : AbstractHandler
+    internal class DecimalHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Decimal;
 

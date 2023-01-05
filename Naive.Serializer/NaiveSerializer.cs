@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Naive.Serializer
 {
+    /// <summary>
+    /// Contains methods for serializing/deserializing objects into binary format.
+    /// </summary>
     public static class NaiveSerializer
     {
         private static readonly IHandler[] _handlers;
@@ -42,6 +45,12 @@ namespace Naive.Serializer
             }
         }
 
+        /// <summary>
+        /// Serialize object into byte array.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static byte[] Serialize(object obj, NaiveSerializerOptions options = null)
         {
             using var ms = new MemoryStream();
@@ -49,6 +58,12 @@ namespace Naive.Serializer
             return ms.ToArray();
         }
 
+        /// <summary>
+        /// Serialize object into stream.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="stream"></param>
+        /// <param name="options"></param>
         public static void Serialize(object obj, Stream stream, NaiveSerializerOptions options = null)
         {
             using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
@@ -56,38 +71,84 @@ namespace Naive.Serializer
             Write(writer, obj, options ?? new());
         }
 
+        /// <summary>
+        /// Deserialize ReadOnlyMemory.
+        /// </summary>
+        /// <param name="rom"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(ReadOnlyMemory<byte> rom, NaiveSerializerOptions options = null)
         {
             using var stream = new RomStream(rom);
             return Deserialize(stream, null, options);
         }
 
+        /// <summary>
+        /// Deserialize byte array.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(byte[] bytes, NaiveSerializerOptions options = null)
         {
             return Deserialize(bytes, null, options);
         }
 
+        /// <summary>
+        /// Deserialize stream.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(Stream stream, NaiveSerializerOptions options = null)
         {
             return Deserialize(stream, null, options);
         }
 
+        /// <summary>
+        /// Deserialize ReadOnlyMemory with type T.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rom"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static T Deserialize<T>(ReadOnlyMemory<byte> rom, NaiveSerializerOptions options = null)
         {
             using var stream = new RomStream(rom);
             return (T)Deserialize(stream, typeof(T), options);
         }
 
+        /// <summary>
+        /// Deserialize byte array with type T.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="bytes"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static T Deserialize<T>(byte[] bytes, NaiveSerializerOptions options = null)
         {
             return (T)Deserialize(bytes, typeof(T), options);
         }
 
+        /// <summary>
+        /// Deserialize stream with type T.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="stream"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static T Deserialize<T>(Stream stream, NaiveSerializerOptions options = null)
         {
             return (T)Deserialize(stream, typeof(T), options);
         }
 
+        /// <summary>
+        /// Deserialize ReadOnlyMemory with type parameter.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="type"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(ReadOnlyMemory<byte> bytes, Type type, NaiveSerializerOptions options = null)
         {
             if (bytes.Length == 0)
@@ -100,6 +161,13 @@ namespace Naive.Serializer
             return Deserialize(stream, type, options);
         }
 
+        /// <summary>
+        /// Deserialize byte array with type parameter
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="type"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(byte[] bytes, Type type, NaiveSerializerOptions options = null)
         {
             if (bytes == null || bytes.Length == 0)
@@ -112,6 +180,13 @@ namespace Naive.Serializer
             return Deserialize(ms, type, options);
         }
 
+        /// <summary>
+        /// Deserialize stream with type parameter
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="type"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
         public static object Deserialize(Stream stream, Type type, NaiveSerializerOptions options = null)
         {
             if (stream.Length == 0)

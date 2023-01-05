@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Naive.Serializer.Handlers
 {
-    public class IDictionaryHandler : AbstractHandler
+    internal class IDictionaryHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.IDictionary;
 

@@ -11,8 +11,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var primitivesSummary = BenchmarkRunner.Run<PrimitivesBenchmark>();
-        var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
+        //var primitivesSummary = BenchmarkRunner.Run<PrimitivesBenchmark>();
+        //var smallSummary = BenchmarkRunner.Run<SmallBenchmark>();
         var bigSummary = BenchmarkRunner.Run<BigBenchmark>();
     }
 }
@@ -50,6 +50,7 @@ public class SmallBenchmark : Benchmark
             new object[] { "Serialize", "Byte?[](10)", new byte?[] { 0, null, 2, null, 4, null, 6, null, 8, null } },
             new object[] { "Serialize", "String[](20)", Enumerable.Range(0, 20).Select(x => "*").ToArray() },
             new object[] { "Serialize", "List<String>(20)", Enumerable.Range(0, 20).Select(x => "*").ToList() },
+            new object[] { "Serialize", "List<Byte[]>(10^2)", Enumerable.Range(0, 10).Select(x => Enumerable.Range(0, 10).Select(x => (byte)x).ToArray()).ToList() },
             new object[] { "Serialize", "PlainClass",  new PlainClass() },
             new object[] { "Serialize", "PlainClass[](5)", Enumerable.Range(0, 5).Select(x => new PlainClass()).ToArray() },
             new object[] { "Serialize", "Object[](10)", new object[] { 0, null, "*", new DateTime(1000, 1, 1), new PlainClass(), Guid.NewGuid(), true, 7f, (byte)8, DateTimeKind.Utc } },

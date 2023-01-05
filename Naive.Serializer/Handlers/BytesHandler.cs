@@ -3,11 +3,11 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class BytesHandler : AbstractHandler
+    internal class BytesHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.Bytes;
 
-        private bool _isReadOnlyMemory;
+        private readonly bool _isReadOnlyMemory;
 
         public BytesHandler(Type type) : base(type)
         {
@@ -35,25 +35,27 @@ namespace Naive.Serializer.Handlers
 
         public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
         {
+            int length;
+            ReadOnlySpan<byte> span;
+
             if (_isReadOnlyMemory)
             {
                 var rom = (ReadOnlyMemory<byte>)obj;
-                writer.Write(rom.Length);
-
-                if (rom.Length > 0)
-                {
-                    writer.Write(rom.Span);
-                }
+                length = rom.Length;
+                span = rom.Span;
             }
             else
             {
                 var bytes = (byte[])obj;
-                writer.Write(bytes.Length);
+                length = bytes.Length;
+                span = bytes.AsSpan();
+            }
 
-                if (bytes.Length > 0)
-                {
-                    writer.Write(bytes);
-                }
+            writer.Write(length);
+
+            if (length > 0)
+            {
+                writer.Write(span);
             }
         }
 

@@ -2,6 +2,9 @@
 
 namespace Naive.Serializer
 {
+    /// <summary>
+    /// Serialization options.
+    /// </summary>
     public class NaiveSerializerOptions
     {
         /// <summary>

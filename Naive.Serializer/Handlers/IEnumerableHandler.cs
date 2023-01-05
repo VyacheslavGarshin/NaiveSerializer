@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Naive.Serializer.Handlers
 {
-    public class IEnumerableHandler : AbstractHandler
+    internal class IEnumerableHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.IEnumerable;
 

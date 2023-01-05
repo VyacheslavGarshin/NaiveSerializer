@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public class TimeSpanHandler : AbstractHandler
+    internal class TimeSpanHandler : AbstractHandler
     {
         public override HandlerType HandlerType { get; } = HandlerType.TimeSpan;
 

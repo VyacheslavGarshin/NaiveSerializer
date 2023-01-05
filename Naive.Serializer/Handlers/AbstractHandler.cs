@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Naive.Serializer.Handlers
 {
-    public abstract class AbstractHandler : IHandler
+    internal abstract class AbstractHandler : IHandler
     {
         public Type Type { get; protected set; }
 
