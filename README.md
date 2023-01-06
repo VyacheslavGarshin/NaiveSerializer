@@ -8,6 +8,8 @@ Features:
 + Resilient to changes in serialized/deserialized classes.
 + Deserialize unknown payload.
 + Respects `DataContract` attributes.
++ Not big payload.
++ Dicent performance.
 
 Plans:
 + Speed improvements on large object lists.
