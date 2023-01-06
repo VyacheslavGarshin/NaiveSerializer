@@ -28,6 +28,8 @@ public class PrimitivesBenchmark : Benchmark
             new object[] { "Serialize", "Bool", true },
             new object[] { "Serialize", "Int(1)", 1 },
             new object[] { "Serialize", "Int(MaxValue)", int.MaxValue },
+            new object[] { "Serialize", "Long(1)", (long)1 },
+            new object[] { "Serialize", "Long(MaxValue)", long.MaxValue },
             new object[] { "Serialize", "Float(1)", 1f },
             new object[] { "Serialize", "Float(MaxValue)", float.MaxValue },
             new object[] { "Serialize", "String(10)", string.Join("", Enumerable.Range(0, 10).Select(x => "*")) },
@@ -35,7 +37,7 @@ public class PrimitivesBenchmark : Benchmark
             new object[] { "Serialize", "TimeSpan", new TimeSpan(10, 10, 10) },
             new object[] { "Serialize", "Guid",  Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}") },
             new object[] { "Serialize", "Enum", DateTimeKind.Utc },
-            new object[] { "Serialize", "Byte[](10)", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new object[] { "Serialize", "Byte[10]", new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
         };
     }
 }
@@ -47,14 +49,17 @@ public class SmallBenchmark : Benchmark
     {
         ToSerialize = new List<object[]>
         {
-            new object[] { "Serialize", "Byte?[](10)", new byte?[] { 0, null, 2, null, 4, null, 6, null, 8, null } },
-            new object[] { "Serialize", "String[](20)", Enumerable.Range(0, 20).Select(x => "*").ToArray() },
-            new object[] { "Serialize", "List<String>(20)", Enumerable.Range(0, 20).Select(x => "*").ToList() },
+            new object[] { "Serialize", "Byte?[10]", new byte?[] { 0, null, 2, null, 4, null, 6, null, 8, null } },
+            new object[] { "Serialize", "Int[10]", Enumerable.Range(0, 10).Select(x => x).ToArray() },
+            new object[] { "Serialize", "Long[10]", Enumerable.Range(0, 10).Select(x => (long)x).ToArray() },
+            new object[] { "Serialize", "String(1)[20]", Enumerable.Range(0, 20).Select(x => "*").ToArray() },
+            new object[] { "Serialize", "List<String(1)>[20]", Enumerable.Range(0, 20).Select(x => "*").ToList() },
             new object[] { "Serialize", "List<Byte[]>(10^2)", Enumerable.Range(0, 10).Select(x => Enumerable.Range(0, 10).Select(x => (byte)x).ToArray()).ToList() },
+            new object[] { "Serialize", "List<Int[]>(10^2)", Enumerable.Range(0, 10).Select(x => Enumerable.Range(0, 10).Select(x => x).ToArray()).ToList() },
             new object[] { "Serialize", "PlainClass",  new PlainClass() },
-            new object[] { "Serialize", "PlainClass[](5)", Enumerable.Range(0, 5).Select(x => new PlainClass()).ToArray() },
-            new object[] { "Serialize", "Object[](10)", new object[] { 0, null, "*", new DateTime(1000, 1, 1), new PlainClass(), Guid.NewGuid(), true, 7f, (byte)8, DateTimeKind.Utc } },
-            new object[] { "Serialize", "Dic<int,string>(10)", Enumerable.Range(0, 10).Select((x, i) => i).ToDictionary((x) => x, (x) => x.ToString()) },
+            new object[] { "Serialize", "PlainClass[5]", Enumerable.Range(0, 5).Select(x => new PlainClass()).ToArray() },
+            new object[] { "Serialize", "Object[10]", new object[] { 0, null, "*", new DateTime(1000, 1, 1), new PlainClass(), Guid.NewGuid(), true, 7f, (byte)8, DateTimeKind.Utc } },
+            new object[] { "Serialize", "Dic<int,string>[10]", Enumerable.Range(0, 10).Select((x, i) => i).ToDictionary((x) => x, (x) => x.ToString()) },
         };
     }
 }
@@ -66,8 +71,9 @@ public class BigBenchmark : Benchmark
     {
         ToSerialize = new List<object[]>
         {
-            new object[] { "Serialize", "PlainClass[](10000)", Enumerable.Range(0, 10000).Select(x => new PlainClass()).ToArray() },
+            new object[] { "Serialize", "PlainClass[10000]", Enumerable.Range(0, 10000).Select(x => new PlainClass()).ToArray() },
             new object[] { "Serialize", "List<Byte[]>(1000^2)", Enumerable.Range(0, 1000).Select(x => Enumerable.Range(0, 1000).Select(x => (byte)x).ToArray()).ToList() },
+            new object[] { "Serialize", "Int[1000000]", Enumerable.Range(0, 1000000).Select(x => x).ToArray() },
         };
     }
 }

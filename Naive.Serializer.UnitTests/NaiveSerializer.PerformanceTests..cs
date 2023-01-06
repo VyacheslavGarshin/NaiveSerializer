@@ -181,6 +181,7 @@ namespace Naive.Serializer.UnitTests
             new []{ 10000, "array[10] string(1)", (object)new string[] { "*", null, "*", "*", "*", "*", "*", "*", "*", "*" } },
             new []{ 10000, "array[10] byte?", (object)new byte?[] { null, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new []{ 10000, "array[10] byte", (object)new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+            new []{ 10000, "array[10] int", (object)new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
             new []{ 10000, "read only memory[10] byte", (object)new ReadOnlyMemory<byte>(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }) },
             new []{ 10000, "array objects", (object)new object[] { 0, "*", true, 1L, new DateTime(1, 1, 1) } },
             new []{ 10000, "dictionary", (object)new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "*" }, { 4, "*" }, { 5, "*" }, { 6, "*" }, { 7, "*" }, { 8, "*" }, { 9, "*" }, { 10, "*" } } },

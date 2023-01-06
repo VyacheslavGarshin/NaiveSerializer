@@ -66,7 +66,7 @@ namespace Naive.Serializer
         /// <param name="options"></param>
         public static void Serialize(object obj, Stream stream, NaiveSerializerOptions options = null)
         {
-            using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
+            using var writer = new BinaryWriterInternal(stream, Encoding.UTF8, true);
 
             Write(writer, obj, options ?? new());
         }
@@ -194,7 +194,7 @@ namespace Naive.Serializer
                 return null;
             }
 
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            using var reader = new BinaryReaderInternal(stream, Encoding.UTF8, true);
 
             return Read(reader, type, options ?? new());
         }
@@ -238,7 +238,7 @@ namespace Naive.Serializer
             throw new NotSupportedException($"Handler for type {type.Name} is not found.");
         }
 
-        internal static void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options, IHandler handler = null)
+        internal static void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options, IHandler handler = null)
         {
             if (obj == null)
             {
@@ -253,7 +253,7 @@ namespace Naive.Serializer
             handler.Write(writer, obj, options);
         }
 
-        internal static object Read(BinaryReader reader, Type type, NaiveSerializerOptions options, IHandler handler = null)
+        internal static object Read(BinaryReaderInternal reader, Type type, NaiveSerializerOptions options, IHandler handler = null)
         {
             var handlerType = (HandlerType)reader.ReadByte();
 

@@ -4,13 +4,13 @@ NaiveSerializer
 .NET Standard binary serialization library.
 
 Features:
-+ Doesn't requere changing of serialized class or adding anything
-+ Resilient to changes in serialized/deserialized classes
-+ Deserialize unknown classes to dictionary
-+ Respects `DataContract` attributes
++ Doesn't requere changing of serialized class or adding anything.
++ Resilient to changes in serialized/deserialized classes.
++ Deserialize unknown payload.
++ Respects `DataContract` attributes.
 
 Plans:
-+ Speed improovments
++ Speed improvements.
 
 Usage
 =====
@@ -33,12 +33,21 @@ result = NaiveSerializer.Deserialize<ValueType>(bytes);
 result = NaiveSerializer.Deserialize(bytes);
 ```
 
+Supported Types
+===============
+
++ All simple types and structs from `System`. 
++ `IDictionary`, `IList`, any `IEnumerable`. 
++ Classes and structs with parameterless constructor.
++ If deserializing class property type is an interface `IEnumerable` then deserialize it as `Array<T>`.
++ If deserializing unknown payload then deserialize objects as `Dictionary<string, object>` and enumerables as arrays.
+
 Installation
 ============
 
 NuGet package is [here](https://www.nuget.org/packages/Naive.Serializer/).
 ```
-> dotnet add package Naive.Serializer --version 1.0.0
+> dotnet add package Naive.Serializer
 ```
 
 Performance

@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -25,8 +25,8 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public abstract void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options);
+        public abstract void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options);
 
-        public abstract object Read(BinaryReader reader, NaiveSerializerOptions options);
+        public abstract object Read(BinaryReaderInternal reader, NaiveSerializerOptions options);
     }
 }

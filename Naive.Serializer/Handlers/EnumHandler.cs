@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -24,14 +24,14 @@ namespace Naive.Serializer.Handlers
             return type.IsEnum || (Nullable.GetUnderlyingType(type)?.IsEnum ?? false);
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
-            writer.Write((int)obj);
+            writer.Write7BitEncodedInt((int)obj);
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
-            var value = reader.ReadInt32();
+            var value = reader.Read7BitEncodedInt();
 
             if (_enumType == null)
             {

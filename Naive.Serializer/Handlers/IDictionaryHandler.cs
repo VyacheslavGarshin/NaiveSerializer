@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Naive.Serializer.Cogs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace Naive.Serializer.Handlers
@@ -68,13 +68,13 @@ namespace Naive.Serializer.Handlers
             return type.GetInterfaces().Any(x => x == typeof(IDictionary));
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write((byte)(_isKeyNullable ? HandlerType.Null : _keyHandler.HandlerType));
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
             var list = (IDictionary)obj;
 
-            writer.Write(list.Count);
+            writer.Write7BitEncodedInt(list.Count);
 
             foreach (DictionaryEntry item in list)
             {
@@ -98,11 +98,11 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
             var keyHandlerType = (HandlerType)reader.ReadByte();
             var handlerType = (HandlerType)reader.ReadByte();
-            var count = reader.ReadInt32();
+            var count = reader.Read7BitEncodedInt();
 
             var isKeyNullable = keyHandlerType == HandlerType.Null;
             var keyHandler = !isKeyNullable && (_keyHandler == null || _keyHandler.HandlerType != keyHandlerType)
@@ -129,7 +129,7 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private object ReadKey(BinaryReader reader, NaiveSerializerOptions options, bool isKeyNullable, IHandler keyHandler)
+        private object ReadKey(BinaryReaderInternal reader, NaiveSerializerOptions options, bool isKeyNullable, IHandler keyHandler)
         {
             object result;
 
@@ -145,7 +145,7 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private object ReadValue(BinaryReader reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
+        private object ReadValue(BinaryReaderInternal reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
         {
             object result;
 

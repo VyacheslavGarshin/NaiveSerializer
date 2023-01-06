@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Naive.Serializer.Cogs;
+using System;
 using System.Collections;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -65,10 +65,10 @@ namespace Naive.Serializer.Handlers
             return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
-            writer.Write(GetCount(obj));
+            writer.Write7BitEncodedInt(GetCount(obj));
 
             foreach (var item in obj as IEnumerable)
             {
@@ -76,10 +76,10 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
             var handlerType = (HandlerType)reader.ReadByte();
-            var count = reader.ReadInt32();
+            var count = reader.Read7BitEncodedInt();
 
             var isNullable = handlerType == HandlerType.Null;
             var itemHandler = !isNullable && (_itemHandler == null || _itemHandler.HandlerType != handlerType)
@@ -141,7 +141,7 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private void WriteItem(BinaryWriter writer, NaiveSerializerOptions options, object item)
+        private void WriteItem(BinaryWriterInternal writer, NaiveSerializerOptions options, object item)
         {
             if (IsNullable)
             {
@@ -153,7 +153,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        private object ReadItem(BinaryReader reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
+        private object ReadItem(BinaryReaderInternal reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
         {
             object result;
 

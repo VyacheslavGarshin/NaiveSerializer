@@ -49,6 +49,9 @@ namespace Naive.Serializer.UnitTests
         [TestCase(null)]
         [TestCase(1)]
         [TestCase(-1)]
+        [TestCase(int.MaxValue)]
+        [TestCase(int.MaxValue >> 16)]
+        [TestCase(int.MinValue)]
         public void TestInt(int? value)
         {
             ThereAndBack(value);
@@ -64,6 +67,9 @@ namespace Naive.Serializer.UnitTests
         [TestCase(null)]
         [TestCase(1)]
         [TestCase(-1)]
+        [TestCase(long.MaxValue >> 32)]
+        [TestCase(long.MaxValue)]
+        [TestCase(long.MinValue)]
         public void TestLong(long? value)
         {
             ThereAndBack(value);

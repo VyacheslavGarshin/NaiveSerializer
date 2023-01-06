@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -16,14 +16,14 @@ namespace Naive.Serializer.Handlers
             return type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?);
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             var value = (DateTimeOffset)obj;
             NaiveSerializer.GetHandler(HandlerType.DateTime).Write(writer, value.DateTime, options);
             NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, options);
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
             var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, options);
             var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, options);

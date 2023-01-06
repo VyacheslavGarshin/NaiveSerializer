@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -16,14 +16,14 @@ namespace Naive.Serializer.Handlers
             return type == typeof(long) || type == typeof(long?);
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
-            writer.Write((long)obj);
+            writer.Write7BitEncodedLong((long)obj);
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
-            return reader.ReadInt64();
+            return reader.Read7BitEncodedLong();
         }
     }
 }

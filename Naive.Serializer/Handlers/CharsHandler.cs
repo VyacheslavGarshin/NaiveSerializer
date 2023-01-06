@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -17,10 +17,10 @@ namespace Naive.Serializer.Handlers
             IsNullable = true;
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             var chars = (char[])obj;
-            writer.Write(chars.Length);
+            writer.Write7BitEncodedInt(chars.Length);
 
             if (chars.Length > 0)
             {
@@ -28,9 +28,9 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
-            var length = reader.ReadInt32();
+            var length = reader.Read7BitEncodedInt();
             return length > 0 ? reader.ReadChars(length) : new char[0];
         }
     }

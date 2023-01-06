@@ -1,5 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using Naive.Serializer.Cogs;
+using System;
 
 namespace Naive.Serializer.Handlers
 {
@@ -33,7 +33,7 @@ namespace Naive.Serializer.Handlers
             return type == typeof(byte[]) || type == typeof(ReadOnlyMemory<byte>) || type == typeof(ReadOnlyMemory<byte>?);
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             int length;
             ReadOnlySpan<byte> span;
@@ -51,7 +51,7 @@ namespace Naive.Serializer.Handlers
                 span = bytes.AsSpan();
             }
 
-            writer.Write(length);
+            writer.Write7BitEncodedInt(length);
 
             if (length > 0)
             {
@@ -59,9 +59,9 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
-            var length = reader.ReadInt32();
+            var length = reader.Read7BitEncodedInt();
             return length > 0 ? reader.ReadBytes(length) : new byte[0];
         }
     }

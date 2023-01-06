@@ -3,7 +3,6 @@ using System;
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -81,7 +80,7 @@ namespace Naive.Serializer.Handlers
             return true;
         }
 
-        public override void Write(BinaryWriter writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
         {
             foreach (var property in _sortedProperties)
             {
@@ -101,7 +100,7 @@ namespace Naive.Serializer.Handlers
             writer.Write((byte)0);
         }
 
-        public override object Read(BinaryReader reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
         {
             var result = _isKnownObject ? _creator() : new Dictionary<string, object>();
             
