@@ -1,0 +1,5 @@
+1.0.1
+- Change int and long binary format to 7bit encoded.
+
+1.0.0
+- Initial very naive release.

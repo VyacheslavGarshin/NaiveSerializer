@@ -1,57 +1,89 @@
-Method,method,name,value,type,Mean,Error,StdDev
-Bois,Deserialize,Byte?[](10),Byte[11],Syste(...)te][] [32],973.1 ns,10.65 ns,9.44 ns
-MsgPack,Deserialize,Byte?[](10),Byte[11],Syste(...)te][] [32],"1,128.3 ns",20.52 ns,19.19 ns
-Naive,Deserialize,Byte?[](10),Byte[21],Syste(...)te][] [32],612.1 ns,11.22 ns,9.95 ns
-Json,Deserialize,Byte?[](10),Byte[36],Syste(...)te][] [32],"2,556.3 ns",36.08 ns,38.60 ns
-Bois,Deserialize,"Dic<int,string>(10)",Byte[31],Syste(...)ring] [67],"2,423.1 ns",48.40 ns,51.79 ns
-MsgPack,Deserialize,"Dic<int,string>(10)",Byte[31],Syste(...)ring] [67],"2,481.1 ns",25.21 ns,22.35 ns
-Naive,Deserialize,"Dic<int,string>(10)",Byte[77],Syste(...)ring] [67],"2,985.8 ns",38.44 ns,35.96 ns
-Json,Deserialize,"Dic<int,string>(10)",Byte[81],Syste(...)ring] [67],"3,255.5 ns",36.88 ns,34.50 ns
-Bois,Deserialize,List<String>(20),Byte[41],Syste(...)ring] [48],"2,893.7 ns",50.79 ns,47.51 ns
-MsgPack,Deserialize,List<String>(20),Byte[43],Syste(...)ring] [48],"3,071.2 ns",39.99 ns,37.40 ns
-Naive,Deserialize,List<String>(20),Byte[66],Syste(...)ring] [48],"1,712.8 ns",18.40 ns,16.31 ns
-Json,Deserialize,List<String>(20),Byte[81],Syste(...)ring] [48],"2,892.4 ns",49.59 ns,43.96 ns
-Naive,Deserialize,Object[](10),Byte[140],System.Object[],"1,782.7 ns",28.37 ns,26.54 ns
-MsgPack,Deserialize,Object[](10),Byte[151],System.Object[],"2,861.7 ns",45.98 ns,43.01 ns
-Bois,Deserialize,Object[](10),Byte[1],System.Object[],"1,328.7 ns",20.59 ns,20.22 ns
-Json,Deserialize,Object[](10),Byte[211],System.Object[],"8,929.8 ns",132.92 ns,124.34 ns
-Json,Deserialize,PlainClass,Byte[124],Benchmark+PlainClass,"3,777.3 ns",49.31 ns,46.13 ns
-Bois,Deserialize,PlainClass,Byte[40],Benchmark+PlainClass,"2,005.8 ns",33.13 ns,29.37 ns
-MsgPack,Deserialize,PlainClass,Byte[76],Benchmark+PlainClass,"2,696.0 ns",17.59 ns,16.46 ns
-Naive,Deserialize,PlainClass,Byte[85],Benchmark+PlainClass,"1,003.3 ns",16.36 ns,15.31 ns
-Bois,Deserialize,PlainClass[](5),Byte[201],Bench(...)ass[] [22],"3,952.0 ns",55.42 ns,51.84 ns
-MsgPack,Deserialize,PlainClass[](5),Byte[381],Bench(...)ass[] [22],"2,317.1 ns",57.05 ns,153.26 ns
-Naive,Deserialize,PlainClass[](5),Byte[431],Bench(...)ass[] [22],"4,411.0 ns",67.42 ns,56.30 ns
-Json,Deserialize,PlainClass[](5),Byte[626],Bench(...)ass[] [22],"9,955.6 ns",191.33 ns,324.89 ns
-Bois,Deserialize,String[](20),Byte[41],System.String[],"1,621.6 ns",9.26 ns,8.21 ns
-MsgPack,Deserialize,String[](20),Byte[43],System.String[],"1,259.8 ns",13.10 ns,10.94 ns
-Naive,Deserialize,String[](20),Byte[66],System.String[],"1,592.3 ns",15.94 ns,14.13 ns
-Json,Deserialize,String[](20),Byte[81],System.String[],"3,029.5 ns",56.81 ns,53.14 ns
-Naive,Serialize,Byte?[](10),Nullable<Byte>[10],?,659.1 ns,13.05 ns,19.13 ns
-Json,Serialize,Byte?[](10),Nullable<Byte>[10],?,"1,882.6 ns",25.29 ns,22.42 ns
-Bois,Serialize,Byte?[](10),Nullable<Byte>[10],?,"1,160.9 ns",13.80 ns,12.23 ns
-MsgPack,Serialize,Byte?[](10),Nullable<Byte>[10],?,579.9 ns,11.05 ns,10.85 ns
-Naive,Serialize,"Dic<int,string>(10)",Syste(...)ring] [67],?,945.4 ns,16.10 ns,13.45 ns
-Json,Serialize,"Dic<int,string>(10)",Syste(...)ring] [67],?,"2,633.1 ns",41.77 ns,39.07 ns
-Bois,Serialize,"Dic<int,string>(10)",Syste(...)ring] [67],?,"2,138.1 ns",32.07 ns,30.00 ns
-MsgPack,Serialize,"Dic<int,string>(10)",Syste(...)ring] [67],?,"1,211.2 ns",16.56 ns,15.49 ns
-Naive,Serialize,List<String>(20),Syste(...)ring] [48],?,"1,087.7 ns",20.39 ns,15.92 ns
-Json,Serialize,List<String>(20),Syste(...)ring] [48],?,"2,886.5 ns",38.80 ns,34.40 ns
-Bois,Serialize,List<String>(20),Syste(...)ring] [48],?,"2,589.2 ns",32.19 ns,28.53 ns
-MsgPack,Serialize,List<String>(20),Syste(...)ring] [48],?,"1,260.9 ns",5.19 ns,4.60 ns
-Naive,Serialize,Object[](10),Object[10],?,"1,177.0 ns",22.26 ns,23.81 ns
-Json,Serialize,Object[](10),Object[10],?,"5,340.4 ns",45.87 ns,40.66 ns
-Bois,Serialize,Object[](10),Object[10],?,"1,360.4 ns",27.00 ns,25.25 ns
-MsgPack,Serialize,Object[](10),Object[10],?,"2,786.1 ns",38.68 ns,34.29 ns
-Naive,Serialize,PlainClass,Benchmark+PlainClass,?,453.9 ns,7.60 ns,6.35 ns
-Json,Serialize,PlainClass,Benchmark+PlainClass,?,"2,234.0 ns",38.88 ns,38.19 ns
-Bois,Serialize,PlainClass,Benchmark+PlainClass,?,"1,664.1 ns",32.56 ns,42.34 ns
-MsgPack,Serialize,PlainClass,Benchmark+PlainClass,?,727.4 ns,5.77 ns,4.82 ns
-Naive,Serialize,PlainClass[](5),PlainClass[5],?,"1,968.0 ns",26.54 ns,30.56 ns
-Json,Serialize,PlainClass[](5),PlainClass[5],?,"10,283.3 ns",181.37 ns,160.78 ns
-Bois,Serialize,PlainClass[](5),PlainClass[5],?,"2,619.8 ns",29.11 ns,24.31 ns
-MsgPack,Serialize,PlainClass[](5),PlainClass[5],?,"2,388.4 ns",47.50 ns,75.34 ns
-Naive,Serialize,String[](20),String[20],?,"1,035.9 ns",20.21 ns,20.76 ns
-Json,Serialize,String[](20),String[20],?,"2,848.3 ns",17.95 ns,14.99 ns
-Bois,Serialize,String[](20),String[20],?,"1,806.8 ns",26.05 ns,24.36 ns
-MsgPack,Serialize,String[](20),String[20],?,843.6 ns,5.87 ns,5.21 ns
+Method,method,name,value,type,Mean,Error,StdDev,Median
+Bois,Deserialize,Byte?[10],Byte[11],Syste(...)te][] [32],966.2 ns,19.34 ns,35.36 ns,952.2 ns
+MsgPack,Deserialize,Byte?[10],Byte[11],Syste(...)te][] [32],"1,189.0 ns",23.56 ns,30.63 ns,"1,187.3 ns"
+Naive,Deserialize,Byte?[10],Byte[18],Syste(...)te][] [32],581.5 ns,6.50 ns,5.07 ns,581.5 ns
+Json,Deserialize,Byte?[10],Byte[36],Syste(...)te][] [32],"2,732.2 ns",47.14 ns,69.10 ns,"2,703.8 ns"
+Bois,Deserialize,"Dic<int,string>[10]",Byte[31],Syste(...)ring] [67],"2,796.0 ns",53.58 ns,52.63 ns,"2,788.8 ns"
+MsgPack,Deserialize,"Dic<int,string>[10]",Byte[31],Syste(...)ring] [67],"2,545.1 ns",47.48 ns,39.65 ns,"2,552.8 ns"
+Naive,Deserialize,"Dic<int,string>[10]",Byte[44],Syste(...)ring] [67],"2,977.9 ns",56.95 ns,69.94 ns,"2,949.9 ns"
+Json,Deserialize,"Dic<int,string>[10]",Byte[81],Syste(...)ring] [67],"3,232.1 ns",63.70 ns,65.41 ns,"3,210.9 ns"
+Bois,Deserialize,Int[10],Byte[11],System.Int32[],502.8 ns,7.92 ns,7.02 ns,500.1 ns
+MsgPack,Deserialize,Int[10],Byte[11],System.Int32[],955.9 ns,18.46 ns,21.98 ns,956.9 ns
+Naive,Deserialize,Int[10],Byte[13],System.Int32[],481.2 ns,7.21 ns,6.02 ns,479.9 ns
+Json,Deserialize,Int[10],Byte[21],System.Int32[],"2,079.9 ns",36.44 ns,30.43 ns,"2,084.4 ns"
+Bois,Deserialize,List<Byte[]>(10^2),Byte[111],Syste(...)te[]] [48],"1,807.1 ns",23.96 ns,20.01 ns,"1,800.4 ns"
+MsgPack,Deserialize,List<Byte[]>(10^2),Byte[121],Syste(...)te[]] [48],"2,812.3 ns",16.78 ns,13.10 ns,"2,810.6 ns"
+Naive,Deserialize,List<Byte[]>(10^2),Byte[123],Syste(...)te[]] [48],841.5 ns,6.99 ns,5.46 ns,840.5 ns
+Json,Deserialize,List<Byte[]>(10^2),Byte[191],Syste(...)te[]] [48],"2,586.2 ns",31.04 ns,24.23 ns,"2,584.6 ns"
+Bois,Deserialize,List<Int[]>(10^2),Byte[111],Syste(...)32[]] [49],NA,NA,NA,NA
+MsgPack,Deserialize,List<Int[]>(10^2),Byte[111],Syste(...)32[]] [49],"4,224.7 ns",49.25 ns,43.66 ns,"4,218.1 ns"
+Naive,Deserialize,List<Int[]>(10^2),Byte[133],Syste(...)32[]] [49],"4,202.0 ns",24.38 ns,22.81 ns,"4,204.9 ns"
+Json,Deserialize,List<Int[]>(10^2),Byte[221],Syste(...)32[]] [49],"11,161.6 ns",155.23 ns,237.06 ns,"11,115.2 ns"
+Bois,Deserialize,List<String(1)>[20],Byte[41],Syste(...)ring] [48],"2,871.8 ns",55.82 ns,54.82 ns,"2,848.1 ns"
+MsgPack,Deserialize,List<String(1)>[20],Byte[43],Syste(...)ring] [48],"3,156.2 ns",53.96 ns,42.13 ns,"3,146.1 ns"
+Naive,Deserialize,List<String(1)>[20],Byte[63],Syste(...)ring] [48],"1,714.3 ns",32.68 ns,30.56 ns,"1,714.9 ns"
+Json,Deserialize,List<String(1)>[20],Byte[81],Syste(...)ring] [48],"2,941.1 ns",57.57 ns,61.60 ns,"2,939.7 ns"
+Bois,Deserialize,Long[10],Byte[11],System.Int64[],514.4 ns,8.03 ns,6.71 ns,511.3 ns
+MsgPack,Deserialize,Long[10],Byte[11],System.Int64[],965.1 ns,18.78 ns,17.56 ns,963.4 ns
+Naive,Deserialize,Long[10],Byte[13],System.Int64[],480.3 ns,9.31 ns,7.77 ns,483.8 ns
+Json,Deserialize,Long[10],Byte[21],System.Int64[],"2,003.4 ns",40.02 ns,35.47 ns,"1,993.5 ns"
+Naive,Deserialize,Object[10],Byte[125],System.Object[],"1,810.1 ns",12.72 ns,9.93 ns,"1,807.0 ns"
+MsgPack,Deserialize,Object[10],Byte[151],System.Object[],"2,986.1 ns",54.21 ns,50.71 ns,"2,965.5 ns"
+Bois,Deserialize,Object[10],Byte[1],System.Object[],"1,523.2 ns",18.27 ns,15.25 ns,"1,516.9 ns"
+Json,Deserialize,Object[10],Byte[211],System.Object[],"8,348.7 ns",116.90 ns,109.35 ns,"8,354.0 ns"
+Json,Deserialize,PlainClass,Byte[124],Benchmark+PlainClass,"3,715.0 ns",72.43 ns,96.69 ns,"3,679.6 ns"
+Bois,Deserialize,PlainClass,Byte[40],Benchmark+PlainClass,"1,993.3 ns",39.73 ns,37.17 ns,"2,000.9 ns"
+MsgPack,Deserialize,PlainClass,Byte[76],Benchmark+PlainClass,"2,869.8 ns",33.98 ns,28.37 ns,"2,870.1 ns"
+Naive,Deserialize,PlainClass,Byte[79],Benchmark+PlainClass,993.6 ns,19.96 ns,23.76 ns,985.9 ns
+Bois,Deserialize,PlainClass[5],Byte[201],Bench(...)ass[] [22],"4,073.8 ns",67.51 ns,59.84 ns,"4,058.2 ns"
+MsgPack,Deserialize,PlainClass[5],Byte[381],Bench(...)ass[] [22],"11,343.8 ns",150.65 ns,125.80 ns,"11,304.6 ns"
+Naive,Deserialize,PlainClass[5],Byte[398],Bench(...)ass[] [22],"4,603.2 ns",86.54 ns,85.00 ns,"4,623.4 ns"
+Json,Deserialize,PlainClass[5],Byte[625],Bench(...)ass[] [22],"9,691.3 ns",187.99 ns,334.15 ns,"9,697.2 ns"
+Bois,Deserialize,String(1)[20],Byte[41],System.String[],"1,639.9 ns",16.84 ns,14.93 ns,"1,638.2 ns"
+MsgPack,Deserialize,String(1)[20],Byte[43],System.String[],"1,328.6 ns",26.28 ns,26.99 ns,"1,324.2 ns"
+Naive,Deserialize,String(1)[20],Byte[63],System.String[],"1,540.1 ns",25.70 ns,24.04 ns,"1,531.0 ns"
+Json,Deserialize,String(1)[20],Byte[81],System.String[],"3,052.5 ns",40.87 ns,34.13 ns,"3,047.0 ns"
+Naive,Serialize,Byte?[10],Nullable<Byte>[10],?,683.9 ns,13.18 ns,17.60 ns,690.5 ns
+Json,Serialize,Byte?[10],Nullable<Byte>[10],?,"1,862.4 ns",36.03 ns,45.56 ns,"1,846.0 ns"
+Bois,Serialize,Byte?[10],Nullable<Byte>[10],?,"1,175.9 ns",23.51 ns,48.03 ns,"1,164.1 ns"
+MsgPack,Serialize,Byte?[10],Nullable<Byte>[10],?,582.1 ns,11.49 ns,17.55 ns,586.6 ns
+Naive,Serialize,"Dic<int,string>[10]",Syste(...)ring] [67],?,905.6 ns,12.28 ns,10.88 ns,899.6 ns
+Json,Serialize,"Dic<int,string>[10]",Syste(...)ring] [67],?,"2,614.7 ns",49.10 ns,45.93 ns,"2,604.5 ns"
+Bois,Serialize,"Dic<int,string>[10]",Syste(...)ring] [67],?,"2,211.6 ns",22.18 ns,17.32 ns,"2,208.9 ns"
+MsgPack,Serialize,"Dic<int,string>[10]",Syste(...)ring] [67],?,"1,176.5 ns",8.92 ns,7.44 ns,"1,173.2 ns"
+Naive,Serialize,Int[10],Int32[10],?,752.3 ns,14.89 ns,26.86 ns,736.7 ns
+Json,Serialize,Int[10],Int32[10],?,"1,990.5 ns",25.86 ns,20.19 ns,"1,993.2 ns"
+Bois,Serialize,Int[10],Int32[10],?,889.5 ns,16.41 ns,15.35 ns,897.0 ns
+MsgPack,Serialize,Int[10],Int32[10],?,368.3 ns,6.16 ns,5.76 ns,367.8 ns
+Naive,Serialize,List<Byte[]>(10^2),Syste(...)te[]] [48],?,"1,068.3 ns",14.72 ns,13.05 ns,"1,066.4 ns"
+Json,Serialize,List<Byte[]>(10^2),Syste(...)te[]] [48],?,"2,743.2 ns",52.98 ns,56.69 ns,"2,734.3 ns"
+Bois,Serialize,List<Byte[]>(10^2),Syste(...)te[]] [48],?,"1,580.5 ns",31.39 ns,30.83 ns,"1,567.8 ns"
+MsgPack,Serialize,List<Byte[]>(10^2),Syste(...)te[]] [48],?,905.0 ns,4.92 ns,3.84 ns,905.6 ns
+Naive,Serialize,List<Int[]>(10^2),Syste(...)32[]] [49],?,"6,946.3 ns",60.00 ns,56.12 ns,"6,960.0 ns"
+Json,Serialize,List<Int[]>(10^2),Syste(...)32[]] [49],?,"10,119.7 ns",80.96 ns,167.20 ns,"10,078.6 ns"
+Bois,Serialize,List<Int[]>(10^2),Syste(...)32[]] [49],?,"2,143.3 ns",19.54 ns,16.31 ns,"2,142.9 ns"
+MsgPack,Serialize,List<Int[]>(10^2),Syste(...)32[]] [49],?,748.3 ns,3.66 ns,2.86 ns,748.7 ns
+Naive,Serialize,List<String(1)>[20],Syste(...)ring] [48],?,"1,072.1 ns",21.49 ns,20.10 ns,"1,062.6 ns"
+Json,Serialize,List<String(1)>[20],Syste(...)ring] [48],?,"2,889.5 ns",46.03 ns,40.80 ns,"2,880.1 ns"
+Bois,Serialize,List<String(1)>[20],Syste(...)ring] [48],?,"2,654.1 ns",39.52 ns,35.03 ns,"2,650.0 ns"
+MsgPack,Serialize,List<String(1)>[20],Syste(...)ring] [48],?,"1,247.2 ns",5.21 ns,4.35 ns,"1,246.2 ns"
+Naive,Serialize,Long[10],Int64[10],?,710.8 ns,7.99 ns,6.24 ns,709.1 ns
+Json,Serialize,Long[10],Int64[10],?,"2,001.5 ns",25.10 ns,19.60 ns,"1,997.4 ns"
+Bois,Serialize,Long[10],Int64[10],?,864.0 ns,3.54 ns,2.96 ns,863.5 ns
+MsgPack,Serialize,Long[10],Int64[10],?,560.4 ns,7.97 ns,7.06 ns,559.8 ns
+Naive,Serialize,Object[10],Object[10],?,"1,253.9 ns",14.56 ns,12.90 ns,"1,251.9 ns"
+Json,Serialize,Object[10],Object[10],?,"3,583.2 ns",301.62 ns,884.61 ns,"3,716.9 ns"
+Bois,Serialize,Object[10],Object[10],?,"1,334.1 ns",16.11 ns,13.45 ns,"1,330.2 ns"
+MsgPack,Serialize,Object[10],Object[10],?,"2,689.3 ns",43.22 ns,40.43 ns,"2,681.1 ns"
+Naive,Serialize,PlainClass,Benchmark+PlainClass,?,552.2 ns,8.34 ns,7.40 ns,551.3 ns
+Json,Serialize,PlainClass,Benchmark+PlainClass,?,"2,204.3 ns",36.02 ns,33.69 ns,"2,191.2 ns"
+Bois,Serialize,PlainClass,Benchmark+PlainClass,?,"1,701.0 ns",32.08 ns,35.66 ns,"1,697.3 ns"
+MsgPack,Serialize,PlainClass,Benchmark+PlainClass,?,724.8 ns,13.64 ns,12.09 ns,727.8 ns
+Naive,Serialize,PlainClass[5],PlainClass[5],?,"2,207.5 ns",27.34 ns,24.24 ns,"2,198.4 ns"
+Json,Serialize,PlainClass[5],PlainClass[5],?,"10,880.2 ns",128.52 ns,113.93 ns,"10,909.1 ns"
+Bois,Serialize,PlainClass[5],PlainClass[5],?,"2,761.7 ns",53.19 ns,47.15 ns,"2,779.9 ns"
+MsgPack,Serialize,PlainClass[5],PlainClass[5],?,"2,380.2 ns",46.25 ns,41.00 ns,"2,357.0 ns"
+Naive,Serialize,String(1)[20],String[20],?,"1,008.8 ns",6.14 ns,5.44 ns,"1,007.0 ns"
+Json,Serialize,String(1)[20],String[20],?,"2,967.9 ns",58.10 ns,85.16 ns,"2,969.2 ns"
+Bois,Serialize,String(1)[20],String[20],?,"1,808.0 ns",13.87 ns,11.58 ns,"1,807.1 ns"
+MsgPack,Serialize,String(1)[20],String[20],?,829.1 ns,3.21 ns,2.51 ns,829.0 ns
