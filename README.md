@@ -8,8 +8,7 @@ Features:
 + Resilient to changes in serialized/deserialized classes.
 + Deserialize unknown payload.
 + Respects `DataContract` attributes.
-+ Not big payload.
-+ Dicent [performance](https://github.com/VyacheslavGarshin/NaiveSerializer#performance).
++ Dicent [performance](https://github.com/VyacheslavGarshin/NaiveSerializer#performance) and payload size.
 
 Plans:
 + Speed improvements on large object lists.
