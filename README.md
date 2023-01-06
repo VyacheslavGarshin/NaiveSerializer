@@ -9,7 +9,7 @@ Features:
 + Deserialize unknown payload.
 + Respects `DataContract` attributes.
 + Not big payload.
-+ Dicent performance.
++ Dicent [performance](https://github.com/VyacheslavGarshin/NaiveSerializer#performance).
 
 Plans:
 + Speed improvements on large object lists.
