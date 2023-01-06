@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Salar.Bois;
 using System.Text;
 
-public class Program
+internal class Program
 {
     public static void Main(string[] args)
     {
@@ -18,7 +18,7 @@ public class Program
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
-public class PrimitivesBenchmark : Benchmark
+internal class PrimitivesBenchmark : Benchmark
 {
     public PrimitivesBenchmark()
     {
@@ -43,7 +43,7 @@ public class PrimitivesBenchmark : Benchmark
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
-public class SmallBenchmark : Benchmark
+internal class SmallBenchmark : Benchmark
 {
     public SmallBenchmark()
     {
@@ -65,7 +65,7 @@ public class SmallBenchmark : Benchmark
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 10)]
-public class BigBenchmark : Benchmark
+internal class BigBenchmark : Benchmark
 {
     public BigBenchmark()
     {
@@ -78,13 +78,13 @@ public class BigBenchmark : Benchmark
     }
 }
 
-public class Benchmark
+internal class Benchmark
 {
     private readonly BoisSerializer _boisSerializer = new ();
 
     protected List<object[]> ToSerialize = new();
 
-    private List<object[]> _toDeserialize = new();
+    private readonly List<object[]> _toDeserialize = new();
 
     public Benchmark()
     {       
@@ -168,7 +168,7 @@ public class Benchmark
         return result;
     }
 
-    private byte[] JsonSerialize(object obj)
+    private static byte[] JsonSerialize(object obj)
     {
         return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(obj));
     }
@@ -186,7 +186,7 @@ public class Benchmark
         return _boisSerializer.Deserialize(ms, type);
     }
 
-    private object MsgPackDeserialize(byte[] bytes, Type type)
+    private static object MsgPackDeserialize(byte[] bytes, Type type)
     {
         using var ms = new MemoryStream(bytes);
         return MessagePackSerializer.Deserialize(type, ms);

@@ -135,7 +135,7 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value);
         }
 
-        static object[] TestTimeSpanCases =
+        static readonly object[] TestTimeSpanCases =
         {
             new []{ (TimeSpan?)null },
             new []{ TimeSpan.FromMinutes(1) },
@@ -147,7 +147,7 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value);
         }
 
-        static object[] TestDateTimeCases =
+        static readonly object[] TestDateTimeCases =
         {
             new []{ (DateTime?)null },
             new []{ DateTime.MinValue },
@@ -160,7 +160,7 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value);
         }
 
-        static object[] TestDateTimeOffsetCases =
+        static readonly object[] TestDateTimeOffsetCases =
         {
             new []{ (DateTimeOffset?)null },
             new []{ DateTimeOffset.MinValue },
@@ -173,7 +173,7 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value);
         }
 
-        static object[] TestGuidCases =
+        static readonly object[] TestGuidCases =
         {
             new []{ (Guid?)null },
             new []{ Guid.Empty },
@@ -194,7 +194,7 @@ namespace Naive.Serializer.UnitTests
             var result = ThereAndBack(value, true, check);
         }
 
-        static object[] TestBytesCases =
+        static readonly object[] TestBytesCases =
         {
             new object[]{ "null", null, true },
             new object[]{ "byte[]", new byte[] { byte.MinValue, 1, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue }, true },
@@ -207,7 +207,7 @@ namespace Naive.Serializer.UnitTests
             var result = ThereAndBack(value);
         }
 
-        static object[] TestCharsCases =
+        static readonly object[] TestCharsCases =
         {
             new object[]{ "null", null },
             new object[]{ "char[]", new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' } },
@@ -219,7 +219,7 @@ namespace Naive.Serializer.UnitTests
             var result = ThereAndBack(value, checkTypedOnly: true);
         }
 
-        static object[] TestIEnumerableCases =
+        static readonly object[] TestIEnumerableCases =
         {
             new object[]{ "byte?[]", new byte?[] { null, byte.MinValue, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue } },
             new object[]{ "list byte", new List<byte> { byte.MinValue, 1, 2, 3, 4, 5, 6, 7, 8, byte.MaxValue } },
@@ -238,7 +238,7 @@ namespace Naive.Serializer.UnitTests
             ThereAndBack(value);
         }
 
-        static object[] TestIDictionaryCases =
+        static readonly object[] TestIDictionaryCases =
         {
             new object[]{ "IDictionary[]", new Dictionary<int, string> { { 1, "*" }, { 2, null }, { 3, "A" } } },
             new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { "", null }, { 3, "A" } } },
@@ -254,7 +254,7 @@ namespace Naive.Serializer.UnitTests
             result.Int.Should().Be(value.Int);
         }
 
-        static object[] TestObjectWithoutContractCases =
+        static readonly object[] TestObjectWithoutContractCases =
         {
             new []{ new ObjectWithoutContract {
                 GuidIgnored = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
@@ -284,7 +284,7 @@ namespace Naive.Serializer.UnitTests
             result.Int.Should().Be(value.Int);
         }
 
-        static object[] TestObjectWithContractCases =
+        static readonly object[] TestObjectWithContractCases =
          {
             new []{ new ObjectWithContract {
                 GuidIgnored = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
@@ -316,7 +316,7 @@ namespace Naive.Serializer.UnitTests
             result = ThereAndBack(value, false, check, null, deserializeType);
         }
 
-        static object[] TestObjectCases =
+        static readonly object[] TestObjectCases =
          {
             new object[]{ "plain object", new PlainObject {
                 Guid = Guid.Parse("{6F9619FF-8B86-D011-B42D-00CF4FC964FF}"),
