@@ -53,6 +53,6 @@ NuGet package is [here](https://www.nuget.org/packages/Naive.Serializer/).
 Performance
 ===========
 
-Couple of times better than NewtonJson, a bit slower than extermly fast binary serializer [Bois](https://github.com/salarcode/Bois).
+Couple of times better than NewtonJson, a bit slower than extremely fast binary serializer [Bois](https://github.com/salarcode/Bois).
 
 Benchmark results are [here](https://github.com/VyacheslavGarshin/NaiveSerializer/tree/main/Naive.Serializer.Benchmark/Results).
