@@ -11,6 +11,7 @@ Features:
 + Dicent [performance](https://github.com/VyacheslavGarshin/NaiveSerializer#performance) and payload size.
 
 Plans:
++ Loop reference detection.
 + Speed improvements on large object lists.
 
 Usage
