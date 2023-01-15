@@ -1,5 +1,10 @@
+1.0.2
+- Adding default static options.
+- Allow to deserialize by original property name along with name set in DataMember.
+
 1.0.1
 - Change int and long binary format to 7bit encoded.
+- Breaks format compatibility with 1.0.0.
 
 1.0.0
 - Initial very naive release.
