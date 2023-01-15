@@ -56,7 +56,16 @@ namespace Naive.Serializer.Handlers
 
                     PrepareDefinition(definition, memberInfo);
 
-                    _properties.TryAdd(new ReadOnlyMemory<byte>(definition.NameBytes), definition);
+                    if (!_properties.TryAdd(new ReadOnlyMemory<byte>(definition.NameBytes), definition))
+                    {
+                        throw new ArgumentException($"Property or field '{definition.Name}' already registered on object '{Type.FullName}'.");
+                    };
+
+                    if (definition.OriginalName != definition.Name && !_properties.TryAdd(new ReadOnlyMemory<byte>(definition.OriginalNameBytes), definition))
+                    {
+                        throw new ArgumentException($"Property or field '{definition.OriginalName}' already registered on object '{Type.FullName}'.");
+                    };
+
                     definitions.Add(definition);
                 }
 
@@ -179,9 +188,9 @@ namespace Naive.Serializer.Handlers
         {
             return
                 Type.GetProperties().Where(x => x.CanRead && x.CanWrite)
-                    .Select(x => new Property { PropertyInfo = x, Name = x.Name }).Concat(
+                    .Select(x => new Property { PropertyInfo = x, OriginalName = x.Name, Name = x.Name }).Concat(
                 Type.GetFields().Where(x => x.IsPublic)
-                    .Select(x => new Property { FieldInfo = x, Name = x.Name }))
+                    .Select(x => new Property { FieldInfo = x, OriginalName = x.Name, Name = x.Name }))
                 .ToArray();
         }
 
@@ -214,6 +223,11 @@ namespace Naive.Serializer.Handlers
                 {
                     definition.Name = dataMember.Name;
                 }
+            }
+
+            if (definition.OriginalName != definition.Name)
+            {
+                definition.OriginalNameBytes = Encoding.UTF8.GetBytes(definition.OriginalName);
             }
 
             definition.NameBytes = Encoding.UTF8.GetBytes(definition.Name);
@@ -274,6 +288,10 @@ namespace Naive.Serializer.Handlers
 
         private class Property
         {
+            public string OriginalName { get; set; }
+
+            public byte[] OriginalNameBytes { get; set; }
+
             public string Name { get; set; }
 
             public byte[] NameBytes { get; set; }

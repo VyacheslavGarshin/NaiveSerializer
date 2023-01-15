@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Naive.Serializer.Handlers
 {
@@ -21,6 +22,8 @@ namespace Naive.Serializer.Handlers
         private readonly bool _isKeyNullable;
 
         private readonly bool _isKnownItemType;
+        
+        private readonly Func<object> _creator;
 
         public IDictionaryHandler(Type type) : base(type)
         {
@@ -61,6 +64,7 @@ namespace Naive.Serializer.Handlers
             }
 
             _isKnownItemType = _itemType != typeof(object);
+            _creator = CreateCreator();
         }
 
         public override bool Match(Type type)
@@ -114,7 +118,7 @@ namespace Naive.Serializer.Handlers
                 ? NaiveSerializer.GetHandler(handlerType)
                 : _itemHandler;
 
-            var result = (IDictionary)Activator.CreateInstance(Type);
+            var result = (IDictionary)_creator();
 
             var addMethod = result.GetType().GetMethod("Add");
 
@@ -127,6 +131,13 @@ namespace Naive.Serializer.Handlers
             }
 
             return result;
+        }
+
+        private Func<object> CreateCreator()
+        {
+            var newExpr = Expression.New(Type);
+            var toObjExpr = Expression.TypeAs(newExpr, typeof(object));
+            return Expression.Lambda<Func<object>>(toObjExpr).Compile();
         }
 
         private object ReadKey(BinaryReaderInternal reader, NaiveSerializerOptions options, bool isKeyNullable, IHandler keyHandler)

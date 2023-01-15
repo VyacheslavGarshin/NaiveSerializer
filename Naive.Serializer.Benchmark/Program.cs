@@ -18,7 +18,7 @@ internal class Program
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
-internal class PrimitivesBenchmark : Benchmark
+public class PrimitivesBenchmark : Benchmark
 {
     public PrimitivesBenchmark()
     {
@@ -43,7 +43,7 @@ internal class PrimitivesBenchmark : Benchmark
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 1000)]
-internal class SmallBenchmark : Benchmark
+public class SmallBenchmark : Benchmark
 {
     public SmallBenchmark()
     {
@@ -65,7 +65,7 @@ internal class SmallBenchmark : Benchmark
 }
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, warmupCount: 1, launchCount: 1, invocationCount: 10)]
-internal class BigBenchmark : Benchmark
+public class BigBenchmark : Benchmark
 {
     public BigBenchmark()
     {
@@ -78,7 +78,7 @@ internal class BigBenchmark : Benchmark
     }
 }
 
-internal class Benchmark
+public class Benchmark
 {
     private readonly BoisSerializer _boisSerializer = new ();
 

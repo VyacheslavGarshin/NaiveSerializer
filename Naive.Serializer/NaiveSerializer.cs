@@ -68,7 +68,7 @@ namespace Naive.Serializer
         {
             using var writer = new BinaryWriterInternal(stream, Encoding.UTF8, true);
 
-            Write(writer, obj, options ?? new());
+            Write(writer, obj, options ?? NaiveSerializerOptions.Default);
         }
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace Naive.Serializer
 
             using var reader = new BinaryReaderInternal(stream, Encoding.UTF8, true);
 
-            return Read(reader, type, options ?? new());
+            return Read(reader, type, options ?? NaiveSerializerOptions.Default);
         }
 
         internal static IHandler GetHandler(HandlerType handlerType)

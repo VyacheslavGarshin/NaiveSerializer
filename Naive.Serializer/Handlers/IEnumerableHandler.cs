@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Naive.Serializer.Handlers
@@ -23,6 +24,8 @@ namespace Naive.Serializer.Handlers
         private readonly bool _isList;
         
         private readonly bool _isKnownItemType;
+        
+        private readonly Func<object> _creator;
 
         public IEnumerableHandler(Type type) : base(type)
         {
@@ -58,6 +61,11 @@ namespace Naive.Serializer.Handlers
             {
                 _isIEnumerable = Type.GetInterface(nameof(IEnumerable)) != null;
             }
+
+            if (!_createArray)
+            {
+                _creator = CreateCreator();
+            }
         }
 
         public override bool Match(Type type)
@@ -86,7 +94,7 @@ namespace Naive.Serializer.Handlers
                 ? NaiveSerializer.GetHandler(handlerType)
                 : _itemHandler;
 
-            var result = _createArray ? Array.CreateInstance(_itemType, count) : Activator.CreateInstance(Type);
+            var result = _createArray ? Array.CreateInstance(_itemType, count) : _creator();
 
             var addMethod = GetAddMethod(result);
             var asIList = result as IList;
@@ -99,6 +107,13 @@ namespace Naive.Serializer.Handlers
             }
 
             return result;
+        }
+
+        private Func<object> CreateCreator()
+        {
+            var newExpr = Expression.New(Type);
+            var toObjExpr = Expression.TypeAs(newExpr, typeof(object));
+            return Expression.Lambda<Func<object>>(toObjExpr).Compile();
         }
 
         private int GetCount(object obj)

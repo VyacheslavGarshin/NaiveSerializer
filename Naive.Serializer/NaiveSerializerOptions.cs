@@ -8,6 +8,11 @@ namespace Naive.Serializer
     public class NaiveSerializerOptions
     {
         /// <summary>
+        /// Default options.
+        /// </summary>
+        public static NaiveSerializerOptions Default { get; } = new();
+
+        /// <summary>
         /// Ignore missing member on deserialize.
         /// </summary>
         /// <remarks>Default is true.</remarks>
