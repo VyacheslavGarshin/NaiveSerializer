@@ -33,6 +33,7 @@ namespace Naive.Serializer
         /// <summary>
         /// Maximum serialization depth.
         /// </summary>
+        /// <remarks>Default is 64.</remarks>
         public int MaxDepth = 64;
 
         /// <summary>

@@ -16,7 +16,7 @@
         Ignore = 1,
 
         /// <summary>
-        /// Do not check loop reference. 
+        /// Do not check loop reference. Saves up to 10% time on serialization.
         /// </summary>
         Serialize = 2
     }
