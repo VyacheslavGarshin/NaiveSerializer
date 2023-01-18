@@ -16,17 +16,17 @@ namespace Naive.Serializer.Handlers
             return type == typeof(DateTimeOffset) || type == typeof(DateTimeOffset?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, Context context)
         {
             var value = (DateTimeOffset)obj;
-            NaiveSerializer.GetHandler(HandlerType.DateTime).Write(writer, value.DateTime, options);
-            NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, options);
+            NaiveSerializer.GetHandler(HandlerType.DateTime).Write(writer, value.DateTime, context);
+            NaiveSerializer.GetHandler(HandlerType.TimeSpan).Write(writer, value.Offset, context);
         }
 
-        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, Context context)
         {
-            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, options);
-            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, options);
+            var dateTime = (DateTime)NaiveSerializer.GetHandler(HandlerType.DateTime).Read(reader, context);
+            var offset = (TimeSpan)NaiveSerializer.GetHandler(HandlerType.TimeSpan).Read(reader, context);
             return new DateTimeOffset(dateTime, offset);
         }
     }

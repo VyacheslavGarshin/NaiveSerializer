@@ -244,6 +244,28 @@ namespace Naive.Serializer.UnitTests
             new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { "", null }, { 3, "A" } } },
         };
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestObjectReferenceLoop(bool ignore)
+        {
+            var value = new PlainObject();
+            value.PObject = value;
+
+            var result = () => NaiveSerializer.Serialize(value, new NaiveSerializerOptions { IgnoreReferenceLoop = ignore });
+
+            if (ignore)
+            {
+                var bytes = result.Should().NotThrow().Which;
+                var des = NaiveSerializer.Deserialize<PlainObject>(bytes);
+
+                des.PObject.Should().BeNull();
+            }
+            else
+            {
+                result.Should().Throw<ArgumentException>();
+            }
+        }
+
         [TestCaseSource(nameof(TestObjectWithoutContractCases))]
         public void TestObjectWithoutContract(ObjectWithoutContract value)
         {

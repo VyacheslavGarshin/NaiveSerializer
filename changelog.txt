@@ -1,3 +1,7 @@
+1.0.3
+- Detecting reference loops. 
+- Small deserialization speed improvements.
+
 1.0.2
 - Adding default static options.
 - Allow to deserialize by original property name along with name set in DataMember.

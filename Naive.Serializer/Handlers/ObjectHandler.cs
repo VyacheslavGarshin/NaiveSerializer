@@ -29,6 +29,7 @@ namespace Naive.Serializer.Handlers
 
         public ObjectHandler (Type type) : base(type)
         {
+            IsObject = true;
             IsNullable = true;
             IsSimple = false;
 
@@ -89,97 +90,84 @@ namespace Naive.Serializer.Handlers
             return true;
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, Context context)
         {
             foreach (var property in _sortedProperties)
             {
                 var value = property.GetValue(obj);
 
-                if (value != null || !options.IgnoreNullValue)
+                if (value != null || !context.Options.IgnoreNullValue)
                 {
                     writer.Write((byte)property.NameBytes.Length);
                     writer.Write(property.NameBytes);
 
                     property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
 
-                    NaiveSerializer.Write(writer, value, options, property.Handler);
+                    NaiveSerializer.Write(writer, value, context, property.Handler);
                 }
             }
 
             writer.Write((byte)0);
         }
 
-        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, Context context)
         {
             var result = _isKnownObject ? _creator() : new Dictionary<string, object>();
-            
-            byte[] nameBuffer = null;
 
-            try
+            do
             {
-                nameBuffer = options.ArrayPool.Rent(byte.MaxValue);
+                var nameLength = reader.ReadByte();
 
-                do
+                if (nameLength == 0)
                 {
-                    var nameLength = reader.ReadByte();
+                    break;
+                }
 
-                    if (nameLength == 0)
+                reader.BaseStream.Read(context.NameBuffer, 0, nameLength);
+                var nameRom = new ReadOnlyMemory<byte>(context.NameBuffer, 0, nameLength);
+
+                object value;
+
+                if (_isKnownObject)
+                {
+                    Property property = null;
+
+                    if (context.Options.UsePropertiesIndex)
                     {
-                        break;
+                        property = _quickTable.Get(nameRom, context.Options.OptimisticIndexSearch && _isQuickTableFull);
                     }
 
-                    reader.BaseStream.Read(nameBuffer, 0, nameLength);
-                    var nameRom = new ReadOnlyMemory<byte>(nameBuffer, 0, nameLength);
-
-                    object value;
-
-                    if (_isKnownObject)
+                    if (property == null)
                     {
-                        Property property = null;
-                        
-                        if (options.UsePropertiesIndex)
-                        {
-                            property = _quickTable.Get(nameRom, options.OptimisticIndexSearch && _isQuickTableFull);
-                        }
+                        _properties.TryGetValue(nameRom, out property);
+                    }
 
-                        if (property == null)
-                        {
-                            _properties.TryGetValue(nameRom, out property);
-                        }
+                    if (property != null)
+                    {
+                        property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
 
-                        if (property != null)
-                        {
-                            property.Handler ??= NaiveSerializer.GetTypeHandler(property.MemberType);
-
-                            value = NaiveSerializer.Read(reader, property.MemberType, options, property.Handler);
-                            property.SetValue(result, value);
-                        }
-                        else
-                        {
-                            if (!options.IgnoreMissingMember)
-                            {
-                                throw new MissingMemberException($"Property with name '{Encoding.UTF8.GetString(nameRom.Span)}' is not found on class '{result.GetType().FullName}'.");
-                            }
-
-                            // skipread
-                            NaiveSerializer.Read(reader, null, options);
-                        }
+                        value = NaiveSerializer.Read(reader, property.MemberType, context, property.Handler);
+                        property.SetValue(result, value);
                     }
                     else
                     {
-                        value = NaiveSerializer.Read(reader, null, options);
-                        ((Dictionary<string, object>)result).Add(Encoding.UTF8.GetString(nameRom.Span), value);
-                    }
-                } while (true);
+                        if (!context.Options.IgnoreMissingMember)
+                        {
+                            throw new MissingMemberException($"Property with name '{Encoding.UTF8.GetString(nameRom.Span)}' is not found on class '{result.GetType().FullName}'.");
+                        }
 
-            }
-            finally
-            {
-                if (nameBuffer != null)
-                {
-                    options.ArrayPool.Return(nameBuffer);
+                        // skipread
+                        NaiveSerializer.Read(reader, null, context);
+                    }
                 }
-            }
+                else
+                {
+                    var name = Encoding.UTF8.GetString(nameRom.Span);
+                    value = NaiveSerializer.Read(reader, null, context);
+                    
+                    ((Dictionary<string, object>)result).Add(name, value);
+                }
+            } while (true);
 
             return result;
         }

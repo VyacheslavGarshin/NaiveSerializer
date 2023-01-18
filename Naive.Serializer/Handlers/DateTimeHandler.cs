@@ -16,12 +16,12 @@ namespace Naive.Serializer.Handlers
             return type == typeof(DateTime) || type == typeof(DateTime?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, Context context)
         {
             writer.Write(((DateTime)obj).ToBinary());
         }
 
-        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, Context context)
         {
             return DateTime.FromBinary(reader.ReadInt64());
         }

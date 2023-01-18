@@ -25,6 +25,12 @@ namespace Naive.Serializer
         public bool IgnoreNullValue { get; set; }
 
         /// <summary>
+        /// Ignore reference loop and serialize as null.
+        /// </summary>
+        /// <remarks>Default is false.</remarks>
+        public bool IgnoreReferenceLoop { get; set; }
+
+        /// <summary>
         /// Automatically create unique index on object properties. Possibly not full.
         /// </summary>
         /// <remarks>

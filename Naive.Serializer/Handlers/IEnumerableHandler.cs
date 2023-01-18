@@ -29,6 +29,7 @@ namespace Naive.Serializer.Handlers
 
         public IEnumerableHandler(Type type) : base(type)
         {
+            IsObject = true;
             IsNullable = true;
             IsSimple = false;
 
@@ -73,18 +74,18 @@ namespace Naive.Serializer.Handlers
             return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, Context context)
         {
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
             writer.Write7BitEncodedInt(GetCount(obj));
 
             foreach (var item in obj as IEnumerable)
             {
-                WriteItem(writer, options, item);
+                WriteItem(writer, context, item);
             }
         }
 
-        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, Context context)
         {
             var handlerType = (HandlerType)reader.ReadByte();
             var count = reader.Read7BitEncodedInt();
@@ -101,7 +102,7 @@ namespace Naive.Serializer.Handlers
 
             for (var i = 0; i < count; i++)
             {
-                var item = ReadItem(reader, options, isNullable, itemHandler);
+                var item = ReadItem(reader, context, isNullable, itemHandler);
 
                 AddItem(result, asIList, addMethod, i, item);
             }
@@ -156,29 +157,29 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private void WriteItem(BinaryWriterInternal writer, NaiveSerializerOptions options, object item)
+        private void WriteItem(BinaryWriterInternal writer, Context context, object item)
         {
             if (IsNullable)
             {
-                NaiveSerializer.Write(writer, item, options, _itemHandler);
+                NaiveSerializer.Write(writer, item, context, _itemHandler);
             }
             else
             {
-                _itemHandler.Write(writer, item, options);
+                _itemHandler.Write(writer, item, context);
             }
         }
 
-        private object ReadItem(BinaryReaderInternal reader, NaiveSerializerOptions options, bool isNullable, IHandler itemHandler)
+        private object ReadItem(BinaryReaderInternal reader, Context context, bool isNullable, IHandler itemHandler)
         {
             object result;
 
             if (isNullable)
             {
-                result = NaiveSerializer.Read(reader, _isKnownItemType ? _itemType : null, options, itemHandler);
+                result = NaiveSerializer.Read(reader, _isKnownItemType ? _itemType : null, context, itemHandler);
             }
             else
             {
-                result = itemHandler.Read(reader, options);
+                result = itemHandler.Read(reader, context);
             }
 
             return result;

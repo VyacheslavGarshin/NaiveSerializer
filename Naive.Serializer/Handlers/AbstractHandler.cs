@@ -13,6 +13,8 @@ namespace Naive.Serializer.Handlers
 
         public bool IsSimple { get; protected set; } = true;
 
+        public bool IsObject { get; protected set; }
+
         public abstract bool Match(Type type);
 
         public AbstractHandler(Type type)
@@ -25,8 +27,8 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public abstract void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options);
+        public abstract void Write(BinaryWriterInternal writer, object obj, Context context);
 
-        public abstract object Read(BinaryReaderInternal reader, NaiveSerializerOptions options);
+        public abstract object Read(BinaryReaderInternal reader, Context context);
     }
 }

@@ -17,7 +17,7 @@ namespace Naive.Serializer.Handlers
             IsNullable = true;
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, NaiveSerializerOptions options)
+        public override void Write(BinaryWriterInternal writer, object obj, Context context)
         {
             var chars = (char[])obj;
             writer.Write7BitEncodedInt(chars.Length);
@@ -28,7 +28,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReaderInternal reader, NaiveSerializerOptions options)
+        public override object Read(BinaryReaderInternal reader, Context context)
         {
             var length = reader.Read7BitEncodedInt();
             return length > 0 ? reader.ReadChars(length) : new char[0];

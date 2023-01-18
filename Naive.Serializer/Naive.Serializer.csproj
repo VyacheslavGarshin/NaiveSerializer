@@ -5,7 +5,7 @@
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
     <PackageId>Naive.Serializer</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>VyacheslavGarshin</Authors>
     <PackageDescription>.NET Standard binary serialization library.</PackageDescription>
     <RepositoryUrl>https://github.com/VyacheslavGarshin/NaiveSerializer</RepositoryUrl>
@@ -15,9 +15,9 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-      - Adding default static options.
-      - Allow to deserialize by original property name along with name set in DataMember.
-		</PackageReleaseNotes>
+      * Detecting reference loops. 
+      * Small deserialization speed improvements.
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
