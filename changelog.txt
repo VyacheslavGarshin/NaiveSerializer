@@ -1,3 +1,7 @@
+1.0.4
+- Adding maximum serialization depth option.
+- Change ignore reference loop boolean parameter to enum with additional Serialize option.
+
 1.0.3
 - Detecting reference loops. 
 - Small deserialization speed improvements.

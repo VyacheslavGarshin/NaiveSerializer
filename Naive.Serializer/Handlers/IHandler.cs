@@ -17,8 +17,8 @@ namespace Naive.Serializer.Handlers
 
         public bool Match(Type type);
 
-        public void Write(BinaryWriterInternal writer, object obj, Context context);
+        public void Write(BinaryWriterInternal writer, object obj, WriteContext context);
 
-        public object Read(BinaryReaderInternal reader, Context context);
+        public object Read(BinaryReaderInternal reader, ReadContext context);
     }
 }

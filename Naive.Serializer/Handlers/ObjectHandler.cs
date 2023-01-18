@@ -90,7 +90,7 @@ namespace Naive.Serializer.Handlers
             return true;
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             foreach (var property in _sortedProperties)
             {
@@ -110,7 +110,7 @@ namespace Naive.Serializer.Handlers
             writer.Write((byte)0);
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             var result = _isKnownObject ? _creator() : new Dictionary<string, object>();
 

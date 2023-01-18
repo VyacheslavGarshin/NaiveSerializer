@@ -33,7 +33,7 @@ namespace Naive.Serializer.Handlers
             return type == typeof(byte[]) || type == typeof(ReadOnlyMemory<byte>) || type == typeof(ReadOnlyMemory<byte>?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             int length;
             ReadOnlySpan<byte> span;
@@ -59,7 +59,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             var length = reader.Read7BitEncodedInt();
             return length > 0 ? reader.ReadBytes(length) : new byte[0];

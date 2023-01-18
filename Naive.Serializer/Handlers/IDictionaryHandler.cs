@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace Naive.Serializer.Handlers
 {
@@ -75,7 +74,7 @@ namespace Naive.Serializer.Handlers
             return type.GetInterfaces().Any(x => x == typeof(IDictionary));
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write((byte)(_isKeyNullable ? HandlerType.Null : _keyHandler.HandlerType));
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
@@ -105,7 +104,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             var keyHandlerType = (HandlerType)reader.ReadByte();
             var handlerType = (HandlerType)reader.ReadByte();
@@ -143,7 +142,7 @@ namespace Naive.Serializer.Handlers
             return Expression.Lambda<Func<object>>(toObjExpr).Compile();
         }
 
-        private object ReadKey(BinaryReaderInternal reader, Context context, bool isKeyNullable, IHandler keyHandler)
+        private object ReadKey(BinaryReaderInternal reader, ReadContext context, bool isKeyNullable, IHandler keyHandler)
         {
             object result;
 
@@ -159,7 +158,7 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private object ReadValue(BinaryReaderInternal reader, Context context, bool isNullable, IHandler itemHandler)
+        private object ReadValue(BinaryReaderInternal reader, ReadContext context, bool isNullable, IHandler itemHandler)
         {
             object result;
 

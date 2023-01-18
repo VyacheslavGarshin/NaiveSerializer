@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Naive.Serializer.Cogs
 {
-    internal class Context : IDisposable
+    internal class ReadContext : AbstractContext, IDisposable
     {
-        public NaiveSerializerOptions Options { get; set; }
-
         public byte[] NameBuffer { get; set; }
 
-        public Stack<object> Stack { get; set; } = new Stack<object>();
-
-        public Context(NaiveSerializerOptions options)
+        public ReadContext(NaiveSerializerOptions options) : base(options) 
         {
-            Options = options;
             NameBuffer = options.ArrayPool.Rent(byte.MaxValue);
         }
 

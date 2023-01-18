@@ -16,12 +16,12 @@ namespace Naive.Serializer.Handlers
             return type == typeof(TimeSpan) || type == typeof(TimeSpan?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write(((TimeSpan)obj).TotalMilliseconds);
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             return TimeSpan.FromMilliseconds(reader.ReadDouble());
         }

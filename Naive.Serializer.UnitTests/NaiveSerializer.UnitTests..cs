@@ -244,16 +244,17 @@ namespace Naive.Serializer.UnitTests
             new object[]{ "IDictionary[]", new Dictionary<object, object> { { 1, "*" }, { "", null }, { 3, "A" } } },
         };
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void TestObjectReferenceLoop(bool ignore)
+        [TestCase(ReferenceLoopHandling.Error)]
+        [TestCase(ReferenceLoopHandling.Ignore)]
+        // [TestCase(ReferenceLoopHandling.Serialize)]
+        public void TestObjectReferenceLoop(ReferenceLoopHandling handling)
         {
             var value = new PlainObject();
             value.PObject = value;
 
-            var result = () => NaiveSerializer.Serialize(value, new NaiveSerializerOptions { IgnoreReferenceLoop = ignore });
+            var result = () => NaiveSerializer.Serialize(value, new NaiveSerializerOptions { ReferenceLoopHandling = handling });
 
-            if (ignore)
+            if (handling != ReferenceLoopHandling.Error)
             {
                 var bytes = result.Should().NotThrow().Which;
                 var des = NaiveSerializer.Deserialize<PlainObject>(bytes);

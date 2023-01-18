@@ -25,10 +25,15 @@ namespace Naive.Serializer
         public bool IgnoreNullValue { get; set; }
 
         /// <summary>
-        /// Ignore reference loop and serialize as null.
+        /// Loop reference handling strategy.
         /// </summary>
-        /// <remarks>Default is false.</remarks>
-        public bool IgnoreReferenceLoop { get; set; }
+        /// <remarks>Default is <see cref="ReferenceLoopHandling.Error"/>.</remarks>
+        public ReferenceLoopHandling ReferenceLoopHandling { get; set; } = ReferenceLoopHandling.Error;
+
+        /// <summary>
+        /// Maximum serialization depth.
+        /// </summary>
+        public int MaxDepth = 64;
 
         /// <summary>
         /// Automatically create unique index on object properties. Possibly not full.

@@ -67,7 +67,7 @@ namespace Naive.Serializer
         public static void Serialize(object obj, Stream stream, NaiveSerializerOptions options = null)
         {
             using var writer = new BinaryWriterInternal(stream, Encoding.UTF8, true);
-            using var context = new Context(options ?? NaiveSerializerOptions.Default);
+            var context = new WriteContext(options ?? NaiveSerializerOptions.Default);
 
             Write(writer, obj, context);
         }
@@ -196,7 +196,7 @@ namespace Naive.Serializer
             }
 
             using var reader = new BinaryReaderInternal(stream, Encoding.UTF8, true);
-            using var context = new Context(options ?? NaiveSerializerOptions.Default);
+            using var context = new ReadContext(options ?? NaiveSerializerOptions.Default);
 
             return Read(reader, type, context);
         }
@@ -240,7 +240,7 @@ namespace Naive.Serializer
             throw new NotSupportedException($"Handler for type {type.Name} is not found.");
         }
 
-        internal static void Write(BinaryWriterInternal writer, object obj, Context context, IHandler handler = null)
+        internal static void Write(BinaryWriterInternal writer, object obj, WriteContext context, IHandler handler = null)
         {
             if (obj == null)
             {
@@ -252,24 +252,34 @@ namespace Naive.Serializer
 
             if (handler.IsObject)
             {
-                if (context.Stack.Count > 0)
+                if (context.Options.ReferenceLoopHandling != ReferenceLoopHandling.Serialize)
                 {
-                    foreach (var parent in context.Stack)
+                    if (context.Stack.Count > 0)
                     {
-                        if (obj == parent)
+                        foreach (var parent in context.Stack)
                         {
-                            if (!context.Options.IgnoreReferenceLoop)
+                            if (obj == parent)
                             {
-                                throw new ArgumentException($"Reference loop detected for object type '{obj.GetType().Name}'.");
-                            }
+                                if (context.Options.ReferenceLoopHandling == ReferenceLoopHandling.Error)
+                                {
+                                    throw new ArgumentException($"Reference loop detected for object type '{obj.GetType().Name}'.");
+                                }
 
-                            writer.Write((byte)HandlerType.Null);
-                            return;
+                                writer.Write((byte)HandlerType.Null);
+                                return;
+                            }
                         }
                     }
+
+                    context.Stack.Push(obj);
                 }
 
-                context.Stack.Push(obj);
+                context.Depth++;
+
+                if (context.Depth > context.Options.MaxDepth)
+                {
+                    throw new ArgumentException($"Maximum depth of {context.Options.MaxDepth} is reached.");
+                }
             }
 
             writer.Write((byte)handler.HandlerType);
@@ -278,11 +288,16 @@ namespace Naive.Serializer
 
             if (handler.IsObject)
             {
-                context.Stack.Pop();
+                if (context.Options.ReferenceLoopHandling != ReferenceLoopHandling.Serialize)
+                {
+                    context.Stack.Pop();
+                }
+
+                context.Depth--;
             }
         }
 
-        internal static object Read(BinaryReaderInternal reader, Type type, Context context, IHandler handler = null)
+        internal static object Read(BinaryReaderInternal reader, Type type, ReadContext context, IHandler handler = null)
         {
             var handlerType = (HandlerType)reader.ReadByte();
 

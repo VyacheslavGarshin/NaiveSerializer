@@ -74,7 +74,7 @@ namespace Naive.Serializer.Handlers
             return type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write((byte)(IsNullable ? HandlerType.Null : _itemHandler.HandlerType));
             writer.Write7BitEncodedInt(GetCount(obj));
@@ -85,7 +85,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             var handlerType = (HandlerType)reader.ReadByte();
             var count = reader.Read7BitEncodedInt();
@@ -157,7 +157,7 @@ namespace Naive.Serializer.Handlers
             return result;
         }
 
-        private void WriteItem(BinaryWriterInternal writer, Context context, object item)
+        private void WriteItem(BinaryWriterInternal writer, WriteContext context, object item)
         {
             if (IsNullable)
             {
@@ -169,7 +169,7 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        private object ReadItem(BinaryReaderInternal reader, Context context, bool isNullable, IHandler itemHandler)
+        private object ReadItem(BinaryReaderInternal reader, ReadContext context, bool isNullable, IHandler itemHandler)
         {
             object result;
 

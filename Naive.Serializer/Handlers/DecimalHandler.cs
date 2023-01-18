@@ -16,12 +16,12 @@ namespace Naive.Serializer.Handlers
             return type == typeof(decimal) || type == typeof(decimal?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write((decimal)obj);
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             return reader.ReadDecimal();
         }

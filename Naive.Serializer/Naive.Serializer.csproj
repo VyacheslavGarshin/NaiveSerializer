@@ -5,7 +5,7 @@
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
     <PackageId>Naive.Serializer</PackageId>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
     <Authors>VyacheslavGarshin</Authors>
     <PackageDescription>.NET Standard binary serialization library.</PackageDescription>
     <RepositoryUrl>https://github.com/VyacheslavGarshin/NaiveSerializer</RepositoryUrl>
@@ -15,8 +15,8 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageReleaseNotes>
-      * Detecting reference loops. 
-      * Small deserialization speed improvements.
+      Adding maximum serialization depth option.
+      Change ignore reference loop boolean parameter to enum with additional Serialize option.
     </PackageReleaseNotes>
   </PropertyGroup>
 

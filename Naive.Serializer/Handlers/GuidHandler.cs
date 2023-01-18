@@ -16,12 +16,12 @@ namespace Naive.Serializer.Handlers
             return type == typeof(Guid) || type == typeof(Guid?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write(((Guid)obj).ToByteArray());
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             return new Guid(reader.ReadBytes(16));
         }

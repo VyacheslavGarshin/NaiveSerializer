@@ -27,8 +27,8 @@ namespace Naive.Serializer.Handlers
             }
         }
 
-        public abstract void Write(BinaryWriterInternal writer, object obj, Context context);
+        public abstract void Write(BinaryWriterInternal writer, object obj, WriteContext context);
 
-        public abstract object Read(BinaryReaderInternal reader, Context context);
+        public abstract object Read(BinaryReaderInternal reader, ReadContext context);
     }
 }

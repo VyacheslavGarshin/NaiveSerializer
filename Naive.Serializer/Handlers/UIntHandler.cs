@@ -16,12 +16,12 @@ namespace Naive.Serializer.Handlers
             return type == typeof(uint) || type == typeof(uint?);
         }
 
-        public override void Write(BinaryWriterInternal writer, object obj, Context context)
+        public override void Write(BinaryWriterInternal writer, object obj, WriteContext context)
         {
             writer.Write((uint)obj);
         }
 
-        public override object Read(BinaryReaderInternal reader, Context context)
+        public override object Read(BinaryReaderInternal reader, ReadContext context)
         {
             return reader.ReadUInt32();
         }
